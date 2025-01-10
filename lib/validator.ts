@@ -92,7 +92,7 @@ export const ShippingAddressSchema = z.object({
   street: z.string().min(1, 'Address is required'),
   city: z.string().min(1, 'City is required'),
   postalCode: z.string().min(1, 'Postal code is required'),
-  province: z.string().min(1, 'Province is required'),
+  state: z.string().min(1, 'State is required'),
   phone: z.string().min(1, 'Phone number is required'),
   country: z.string().min(1, 'Country is required'),
 })
@@ -171,7 +171,7 @@ export const UserInputSchema = z.object({
     fullName: z.string().min(1, 'Full name is required'),
     street: z.string().min(1, 'Street is required'),
     city: z.string().min(1, 'City is required'),
-    province: z.string().min(1, 'Province is required'),
+    state: z.string().min(1, 'State is required'),
     postalCode: z.string().min(1, 'Postal code is required'),
     country: z.string().min(1, 'Country is required'),
     phone: z.string().min(1, 'Phone number is required'),
