@@ -3,7 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { useForm } from 'react-hook-form'
+import { useForm, useFieldArray } from 'react-hook-form'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import {
@@ -48,6 +48,7 @@ const productDefaultValues: IProductInput =
         colors: [],
         ratingDistribution: [],
         reviews: [],
+        variants: [], // Initialize variants
       }
     : {
         name: '',
@@ -69,6 +70,7 @@ const productDefaultValues: IProductInput =
         colors: [],
         ratingDistribution: [],
         reviews: [],
+        variants: [], // Initialize variants
       }
 
 const ProductForm = ({
@@ -81,6 +83,7 @@ const ProductForm = ({
   productId?: string
 }) => {
   const router = useRouter()
+  const { toast } = useToast()
 
   const form = useForm<IProductInput>({
     resolver:
@@ -88,43 +91,35 @@ const ProductForm = ({
         ? zodResolver(ProductUpdateSchema)
         : zodResolver(ProductInputSchema),
     defaultValues:
-      product && type === 'Update' ? product : productDefaultValues,
+      product && type === 'Update'
+        ? { ...productDefaultValues, ...product }
+        : productDefaultValues,
   })
 
-  const { toast } = useToast()
-  async function onSubmit(values: IProductInput) {
-    if (type === 'Create') {
-      const res = await createProduct(values)
-      if (!res.success) {
-        toast({
-          variant: 'destructive',
-          description: res.message,
-        })
-      } else {
-        toast({
-          description: res.message,
-        })
-        router.push(`/admin/products`)
-      }
-    }
-    if (type === 'Update') {
-      if (!productId) {
-        router.push(`/admin/products`)
-        return
-      }
-      const res = await updateProduct({ ...values, _id: productId })
-      if (!res.success) {
-        toast({
-          variant: 'destructive',
-          description: res.message,
-        })
-      } else {
-        router.push(`/admin/products`)
-      }
-    }
-  }
+  const {
+    fields: variants,
+    append,
+    remove,
+  } = useFieldArray({
+    control: form.control,
+    name: 'variants',
+  })
 
   const images = form.watch('images')
+
+  async function onSubmit(values: IProductInput) {
+    const res =
+      type === 'Create'
+        ? await createProduct(values)
+        : await updateProduct({ ...values, _id: productId as string })
+
+    if (!res.success) {
+      toast({ variant: 'destructive', description: res.message })
+    } else {
+      toast({ description: res.message })
+      router.push(`/admin/products`)
+    }
+  }
 
   return (
     <Form {...form}>
@@ -353,6 +348,151 @@ const ProductForm = ({
             )}
           />
         </div>
+
+        {/* Variants Section */}
+        <div>
+          <div className='flex justify-between items-center'>
+            <FormLabel>Product Variants</FormLabel>
+            <Button
+              type='button'
+              onClick={() =>
+                append({
+                  sku: '',
+                  images: [],
+                  price: 0,
+                  countInStock: 0,
+                  color: '',
+                  size: '',
+                })
+              }
+            >
+              Add Variant
+            </Button>
+          </div>
+          <div className='space-y-4'>
+            {variants.map((variant, index) => (
+              <Card key={variant.id}>
+                <CardContent className='grid grid-cols-6 gap-4 items-center'>
+                  <FormField
+                    control={form.control}
+                    name={`variants.${index}.sku`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>SKU</FormLabel>
+                        <FormControl>
+                          <Input placeholder='SKU' {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name={`variants.${index}.price`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Price</FormLabel>
+                        <FormControl>
+                          <Input type='number' placeholder='Price' {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name={`variants.${index}.countInStock`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Stock</FormLabel>
+                        <FormControl>
+                          <Input type='number' placeholder='Stock' {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name={`variants.${index}.color`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Color</FormLabel>
+                        <FormControl>
+                          <Input placeholder='Color' {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name={`variants.${index}.size`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Size</FormLabel>
+                        <FormControl>
+                          <Input placeholder='Size' {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name={`variants.${index}.images`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Images</FormLabel>
+                        <UploadButton
+                          endpoint='imageUploader'
+                          onClientUploadComplete={(res: { url: string }[]) => {
+                            field.onChange([
+                              ...(field.value || []),
+                              ...res.map((r) => r.url),
+                            ])
+                          }}
+                        />
+                        <div className='flex space-x-2 mt-2'>
+                          {field.value?.map((img: string, i: number) => (
+                            <div key={i} className='relative'>
+                              <Image
+                                src={img}
+                                alt={`Variant ${index} Image ${i}`}
+                                className='w-16 h-16 object-cover rounded-md'
+                                width={64}
+                                height={64}
+                              />
+                              <button
+                                type='button'
+                                onClick={() =>
+                                  field.onChange(
+                                    field.value.filter((_, idx) => idx !== i)
+                                  )
+                                }
+                                className='absolute top-0 right-0 bg-red-500 text-white rounded-full p-1'
+                              >
+                                ✕
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </FormItem>
+                    )}
+                  />
+                  <Button
+                    type='button'
+                    variant='destructive'
+                    onClick={() => remove(index)}
+                  >
+                    Remove
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+
         <div>
           <Button
             type='submit'

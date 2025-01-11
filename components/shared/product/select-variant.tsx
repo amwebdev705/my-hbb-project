@@ -1,23 +1,55 @@
 import { Button } from '@/components/ui/button'
 import { IProduct } from '@/lib/db/models/product.model'
 import Link from 'next/link'
+import ProductGallery from './product-gallery'
+import ProductPrice from './product-price'
 
 export default function SelectVariant({
   product,
-  size,
   color,
+  size,
 }: {
   product: IProduct
   color: string
   size: string
 }) {
-  const selectedColor = color || product.colors[0]
-  const selectedSize = size || product.sizes[0]
+  const selectedColor = color || product.colors?.[0] || "DefaultColor"
+  const selectedSize = size || product.sizes?.[0] || "DefaultSize"
+
+  // Find the selected variant
+  const selectedVariant = product.variants?.find(
+    (variant) =>
+      variant.color === selectedColor && variant.size === selectedSize
+  )
+
+  const variantImages = selectedVariant?.images || product.images || [] // Fallback to product images if no variant
 
   return (
     <>
-      {product.colors.length > 0 && (
-        <div className='space-x-2 space-y-2'>
+      {/* Product Gallery */}
+      <ProductGallery images={variantImages} />
+
+      {/* Display Variant Details */}
+      <div className='mt-4'>
+        <div>
+          <strong>SKU:</strong> {selectedVariant?.sku || 'N/A'}
+        </div>
+        <div>
+          <strong>Price:</strong>{' '}
+          <ProductPrice
+            price={selectedVariant?.price || product.price}
+            listPrice={product.listPrice}
+            isDeal={product.tags.includes('todays-deal')}
+          />
+        </div>
+        <div>
+          <strong>Stock:</strong> {selectedVariant?.countInStock || product.countInStock}
+        </div>
+      </div>
+
+      {/* Color Selection */}
+      {product.colors?.length > 0 && (
+        <div className='space-x-2 space-y-2 mt-4'>
           <div>Color:</div>
           {product.colors.map((x: string) => (
             <Button
@@ -35,7 +67,6 @@ export default function SelectVariant({
                   color: x,
                   size: selectedSize,
                 })}`}
-                key={x}
               >
                 <div
                   style={{ backgroundColor: x }}
@@ -47,7 +78,9 @@ export default function SelectVariant({
           ))}
         </div>
       )}
-      {product.sizes.length > 0 && (
+
+      {/* Size Selection */}
+      {product.sizes?.length > 0 && (
         <div className='mt-2 space-x-2 space-y-2'>
           <div>Size:</div>
           {product.sizes.map((x: string) => (
@@ -55,7 +88,7 @@ export default function SelectVariant({
               asChild
               variant='outline'
               className={
-                selectedSize === x ? 'border-2  border-primary' : 'border-2  '
+                selectedSize === x ? 'border-2 border-primary' : 'border-2'
               }
               key={x}
             >
