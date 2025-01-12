@@ -8,8 +8,8 @@ import ProductPrice from './product-price'
 
 export default function DetailsCard({ product }: { product: IProduct }) {
   const searchParams = useSearchParams()
-  const selectedColor = searchParams.get('color') || product.colors?.[0] || ''
-  const selectedSize = searchParams.get('size') || product.sizes?.[0] || ''
+  const selectedColor = searchParams.get('color') || product.color?.[0] || ''
+  const selectedSize = searchParams.get('size') || product.size?.[0] || ''
 
   // Find the selected variant
   const selectedVariant = product.variants?.find(
@@ -51,7 +51,7 @@ export default function DetailsCard({ product }: { product: IProduct }) {
           </div>
 
           {/* Select Variants */}
-          <SelectVariant product={product} color={selectedColor} size={selectedSize} />
+          <SelectVariant product={product} color={selectedColor}  />
 
           {/* Description */}
           <div className='mt-6'>
