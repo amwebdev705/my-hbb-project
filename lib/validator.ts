@@ -58,8 +58,8 @@ export const ProductInputSchema = z.object({
     .int()
     .nonnegative('count in stock must be a non-negative number'),
   tags: z.array(z.string()).default([]),
-  sizes: z.array(z.string()).default([]),
-  colors: z.array(z.string()).default([]),
+  size: z.string().optional(), // Size is optional
+  color: z.string().optional(),
   avgRating: z.coerce
     .number()
     .min(0, 'Average rating must be at least 0')

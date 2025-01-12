@@ -1,48 +1,41 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import Image from 'next/image'
-import Zoom from 'react-medium-image-zoom'
-import 'react-medium-image-zoom/dist/styles.css'
-export default function ProductGallery({ images }: { images: string[] }) {
-  const [selectedImage, setSelectedImage] = useState(0)
+// import { useState } from 'react';
+import Image from 'next/image';
+import { useState } from 'react';
+
+export default function ProductGallery({ images = [] }: { images?: string[] }) {
+  const [selectedImage, setSelectedImage] = useState(0);
+
   return (
-    <div className='flex gap-2'>
-      <div className='flex flex-col gap-2 mt-8'>
-        {images.map((image, index) => (
+    <div className="flex gap-2">
+      {/* Thumbnails */}
+      <div className="flex flex-col gap-2">
+        {images.map((img, i) => (
           <button
-            key={index}
-            onClick={() => {
-              setSelectedImage(index)
-            }}
-            onMouseOver={() => {
-              setSelectedImage(index)
-            }}
-            className={`bg-white rounded-lg overflow-hidden ${
-              selectedImage === index
-                ? 'ring-2 ring-blue-500'
-                : 'ring-1 ring-gray-300'
+            key={i}
+            onClick={() => setSelectedImage(i)}
+            className={`p-1 ${
+              selectedImage === i ? 'border-2 border-primary' : 'border'
             }`}
           >
-            <Image src={image} alt={'product image'} width={48} height={48} />
+            <Image src={img} width={50} height={50} alt={`Thumbnail ${i}`} />
           </button>
         ))}
       </div>
 
-      <div className='w-full'>
-        <Zoom>
-          <div className='relative h-[500px]'>
-            <Image
-              src={images[selectedImage]}
-              alt={'product image'}
-              fill
-              sizes='90vw'
-              className='object-contain'
-              priority
-            />
-          </div>
-        </Zoom>
+      {/* Main Image */}
+      <div>
+        <Image
+          src={images[selectedImage]}
+          width={500}
+          height={500}
+          alt="Main"
+          className="border"
+        />
       </div>
     </div>
-  )
+  );
 }
+
+

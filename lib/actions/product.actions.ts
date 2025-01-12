@@ -41,12 +41,14 @@ export async function updateProduct(data: z.infer<typeof ProductUpdateSchema>) {
     return { success: false, message: formatError(error) }
   }
 }
+
 // GET ONE PRODUCT BY ID
 export async function getProductById(productId: string) {
   await connectToDatabase()
   const product = await Product.findById(productId)
   return JSON.parse(JSON.stringify(product)) as IProduct
 }
+
 // DELETE
 export async function deleteProduct(id: string) {
   try {
@@ -117,6 +119,7 @@ export async function getAllProductsForAdmin({
     to: pageSize * (Number(page) - 1) + products.length,
   }
 }
+
 export async function getAllCategories() {
   await connectToDatabase()
   const categories = await Product.find({ isPublished: true }).distinct(
@@ -124,6 +127,7 @@ export async function getAllCategories() {
   )
   return categories
 }
+
 export async function getProductsForCard({
   tag,
   limit = 4,
@@ -170,9 +174,14 @@ export async function getProductsByTag({
 export async function getProductBySlug(slug: string) {
   await connectToDatabase()
   const product = await Product.findOne({ slug, isPublished: true })
+
   if (!product) throw new Error('Product not found')
+
+  // console.log('Fetched Product:', JSON.stringify(product, null, 2)); // Debug log
+
   return JSON.parse(JSON.stringify(product)) as IProduct
 }
+
 // GET RELATED PRODUCTS: PRODUCTS WITH SAME CATEGORY
 export async function getRelatedProductsByCategory({
   category,
@@ -313,4 +322,3 @@ export async function getAllTags() {
       ) as string[]) || []
   )
 }
-

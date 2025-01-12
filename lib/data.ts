@@ -285,8 +285,8 @@ const products: IProductInput[] = [
     countInStock: 0, // Stock handled by variants
     description:
       'Made with chemicals safer for human health and the environment',
-    sizes: [],
-    colors: [],
+    size: '', 
+    color: '',
     reviews: [],
     variants: [
       {
@@ -331,8 +331,8 @@ const products: IProductInput[] = [
     countInStock: 12,
     description:
       'Made with sustainably sourced USA grown cotton; Shoulder-to-shoulder tape; double-needle coverstitched front neck; Set-in sleeves; Rib cuffs with concealed seams; Seamless body for a wide printing area',
-    sizes: ['S', 'M', 'L', 'XL', 'XXL'],
-    colors: ['Yellow', 'Red', 'Black'],
+    size: '',
+    color: '',
     reviews: [],
     variants: [],
   },
@@ -360,8 +360,8 @@ const products: IProductInput[] = [
     countInStock: 0,
     description:
       'The Jerzees long sleeve t-shirt is made with dri-power technology that wicks away moisture to keep you cool and dry throughout your day. We also included a rib collar and cuffs for added durability, and a lay-flat collar for comfort.',
-    sizes: [],
-    colors: [],
+    size: '',
+    color: '',
     reviews: [],
     variants: [
       {
@@ -406,8 +406,8 @@ const products: IProductInput[] = [
     numSales: 21,
     description:
       'Silver Jeans Co. Jace Slim Fit Bootcut Jeans - Consider Jace a modern cowboy jean. It sits below the waist and features a slim fit through the hip and thigh. Finished with an 18” bootcut leg opening that complements the slimmer silhouette while still fitting over boots',
-    sizes: ['30Wx30L', '34Wx30L', '36Wx30L'],
-    colors: ['Blue', 'Grey'],
+    size: '',
+    color: '',
     reviews: [],
     variants: [],
   },
@@ -435,8 +435,8 @@ const products: IProductInput[] = [
     numSales: 64,
     description:
       "At least 50% of the shoe's main upper material is made with recycled content to reduce waste and carbon emissions",
-    sizes: [],
-    colors: [],
+    size: '',
+    color: '',
     reviews: [],
     variants: [
       {
@@ -480,8 +480,8 @@ const products: IProductInput[] = [
     countInStock: 10,
     description:
       'Stay comfortable during your workouts with this long-sleeve training t-shirt made from breathable fabric.',
-    sizes: ['S', 'M', 'L', 'XL'],
-    colors: ['Black', 'Red'],
+    size: '',
+    color: '',
     reviews: [],
     variants: [],
   },
@@ -508,8 +508,8 @@ const products: IProductInput[] = [
     countInStock: 0, // Stock managed by variants
     description:
       'This t-shirt combines the softness of cotton with performance fabric for ultimate comfort.',
-    sizes: [],
-    colors: [],
+    size: '',
+    color: '',
     reviews: [],
     variants: [
       {
@@ -553,8 +553,8 @@ const products: IProductInput[] = [
     countInStock: 8,
     description:
       'Show off your style with this comfortable and breathable graphic tee.',
-    sizes: ['M', 'L'],
-    colors: ['White', 'Black'],
+    size: '',
+    color: 'Black',
     reviews: [],
     variants: [],
   },
@@ -581,8 +581,8 @@ const products: IProductInput[] = [
     countInStock: 0,
     description:
       'The perfect blend of performance and comfort, ideal for your workout sessions.',
-    sizes: [],
-    colors: [],
+    size: '',
+    color: '',
     reviews: [],
     variants: [
       {
@@ -626,8 +626,8 @@ const products: IProductInput[] = [
     countInStock: 15,
     description:
       'Stay cool and dry with Nike Dri-FIT technology in this stylish and functional t-shirt.',
-    sizes: ['M', 'L', 'XL'],
-    colors: ['Blue', 'Black'],
+    size: '',
+    color: 'Black',
     reviews: [],
     variants: [],
   },
@@ -653,8 +653,8 @@ const products: IProductInput[] = [
     numSales: 30,
     countInStock: 10,
     description: 'Classic Levi’s denim jacket, a timeless wardrobe essential.',
-    sizes: ['M', 'L', 'XL'],
-    colors: ['Blue', 'Grey'],
+    size: '',
+    color: 'Grey',
     reviews: [],
     variants: [],
   },
@@ -681,8 +681,8 @@ const products: IProductInput[] = [
     countInStock: 8,
     description:
       'Eco-friendly and ultra-comfortable sweatshirt perfect for everyday wear.',
-    sizes: ['S', 'M', 'L', 'XL', 'XXL'],
-    colors: ['Black', 'Green', 'Grey'],
+    size: '',
+    color: 'Green',
     reviews: [],
     variants: [],
   },
@@ -709,8 +709,8 @@ const products: IProductInput[] = [
     countInStock: 0,
     description:
       'Adidas Classic Hoodie, perfect for workouts and casual outings.',
-    sizes: [],
-    colors: [],
+    size: '',
+    color: '',
     reviews: [],
     variants: [
       {

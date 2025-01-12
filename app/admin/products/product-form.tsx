@@ -44,8 +44,8 @@ const productDefaultValues: IProductInput =
         numSales: 0,
         isPublished: false,
         tags: [],
-        sizes: [],
-        colors: [],
+        size: '',
+        color: '',
         ratingDistribution: [],
         reviews: [],
         variants: [], // Initialize variants
@@ -66,8 +66,8 @@ const productDefaultValues: IProductInput =
         numSales: 0,
         isPublished: false,
         tags: [],
-        sizes: [],
-        colors: [],
+        size: '',
+        color: '',
         ratingDistribution: [],
         reviews: [],
         variants: [], // Initialize variants
@@ -211,6 +211,49 @@ const ProductForm = ({
                 <FormLabel>Brand</FormLabel>
                 <FormControl>
                   <Input placeholder='Enter product brand' {...field} />
+                </FormControl>
+
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+        <div className='flex flex-col gap-5 md:flex-row'>
+          <FormField
+            control={form.control}
+            name='tags'
+            render={({ field }) => (
+              <FormItem className='w-full'>
+                <FormLabel>Tags</FormLabel>
+                <FormControl>
+                  <Input placeholder='Enter tags' {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name='color'
+            render={({ field }) => (
+              <FormItem className='w-full'>
+                <FormLabel>Color</FormLabel>
+                <FormControl>
+                  <Input placeholder='Enter color' {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name='size'
+            render={({ field }) => (
+              <FormItem className='w-full'>
+                <FormLabel>Size</FormLabel>
+                <FormControl>
+                  <Input placeholder='Enter product size' {...field} />
                 </FormControl>
 
                 <FormMessage />

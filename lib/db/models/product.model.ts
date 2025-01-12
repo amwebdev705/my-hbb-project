@@ -1,50 +1,51 @@
-import { Document, Model, model, models, Schema } from 'mongoose'
-import { IProductInput } from '@/types'
+import { Document, Model, model, models, Schema } from 'mongoose';
+import { IProductInput } from '@/types';
 
 export interface IProductVariant {
-  sku: string
-  images: string[]
-  price: number
-  countInStock: number
-  color: string
-  size: string
+  sku: string;
+  images: string[];
+  price: number;
+  countInStock: number;
+  color: string;
+  size: string;
 }
+
 export interface IProduct extends Document, IProductInput {
-  _id: string
-  createdAt: Date
-  updatedAt: Date
-  variants?: IProductVariant[] // Include variants in the interface
+  _id: string;
+  createdAt: Date;
+  updatedAt: Date;
+  variants?: IProductVariant[]; 
 }
 
 const variantSchema = new Schema<IProductVariant>(
   {
     sku: {
       type: String,
-      required: false, // Optional as not all variants may have SKUs
+      required: false, 
     },
     images: {
       type: [String],
-      required: false, // Optional as not all variants may have images
+      required: false, 
     },
     price: {
       type: Number,
-      required: true,
+      required: true, 
     },
     countInStock: {
       type: Number,
-      required: true,
+      required: true, 
     },
     color: {
       type: String,
-      required: false, // Optional if not all variants need color
+      required: false,
     },
     size: {
       type: String,
-      required: false, // Optional if not all variants need size
+      required: false, 
     },
   },
   { _id: false } // Prevent additional `_id` field for each variant
-)
+);
 
 const productSchema = new Schema<IProduct>(
   {
@@ -86,9 +87,18 @@ const productSchema = new Schema<IProduct>(
       type: Number,
       required: true,
     },
-    tags: { type: [String], default: ['new arrival'] },
-    colors: { type: [String], default: ['White', 'Red', 'Black'] },
-    sizes: { type: [String], default: ['S', 'M', 'L'] },
+    tags: {
+      type: [String],
+      default: ['new arrival'],
+    },
+    color: {
+      type: String,
+      required: false,
+    },
+    size: {
+      type: String,
+      required: false,
+    },
     avgRating: {
       type: Number,
       required: true,
@@ -128,15 +138,15 @@ const productSchema = new Schema<IProduct>(
         default: [],
       },
     ],
-    variants: [variantSchema], // Add the variants array with sub-schema
+    variants: [variantSchema], 
   },
   {
-    timestamps: true,
+    timestamps: true, 
   }
-)
+);
 
 const Product =
   (models.Product as Model<IProduct>) ||
-  model<IProduct>('Product', productSchema)
+  model<IProduct>('Product', productSchema);
 
-export default Product
+export default Product;

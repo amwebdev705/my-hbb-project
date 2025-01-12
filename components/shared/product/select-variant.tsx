@@ -1,111 +1,120 @@
-import { Button } from '@/components/ui/button'
-import { IProduct } from '@/lib/db/models/product.model'
-import Link from 'next/link'
-import ProductGallery from './product-gallery'
-import ProductPrice from './product-price'
+'use client';
+
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { IProduct } from '@/lib/db/models/product.model';
+import ProductGallery from './product-gallery';
+import ProductPrice from './product-price';
 
 export default function SelectVariant({
   product,
   color,
-  size,
 }: {
-  product: IProduct
-  color: string
-  size: string
+  product: IProduct;
+  color?: string;
 }) {
-  const selectedColor = color || product.colors?.[0] || "DefaultColor"
-  const selectedSize = size || product.sizes?.[0] || "DefaultSize"
+  const hasVariants = product.variants?.length ?? 0 > 0; // Safely check if variants exist
 
-  // Find the selected variant
-  const selectedVariant = product.variants?.find(
-    (variant) =>
-      variant.color === selectedColor && variant.size === selectedSize
-  )
+  // Extract available colors from variants, or fallback to product color
+  const availableColors = hasVariants
+    ? [...new Set(product.variants!.map((variant) => variant.color).filter(Boolean))]
+    : product.color
+    ? [product.color]
+    : [];
 
-  const variantImages = selectedVariant?.images || product.images || [] // Fallback to product images if no variant
+  const defaultColor = color || availableColors[0] || '';
+
+  // Find the initial selected variant
+  const initialSelectedVariant = hasVariants
+    ? product.variants!.find((variant) => variant.color === defaultColor)
+    : null;
+
+  const [selectedVariant, setSelectedVariant] = useState(initialSelectedVariant);
+  const [selectedColor, setSelectedColor] = useState(defaultColor);
+  const [variantImages, setVariantImages] = useState(
+    initialSelectedVariant?.images || product.images
+  );
+  const [stockCount, setStockCount] = useState(
+    initialSelectedVariant?.countInStock || product.countInStock || 0
+  );
+
+  // Update selectedVariant and related state when the color changes
+  useEffect(() => {
+    if (hasVariants) {
+      const newSelectedVariant = product.variants!.find(
+        (variant) => variant.color === selectedColor
+      );
+
+      setSelectedVariant(newSelectedVariant || null);
+      setVariantImages(newSelectedVariant?.images || product.images);
+      setStockCount(newSelectedVariant?.countInStock || product.countInStock || 0);
+    } else {
+      // No variants, fallback to base product
+      setSelectedVariant(null);
+      setVariantImages(product.images);
+      setStockCount(product.countInStock || 0);
+    }
+  }, [selectedColor, product, hasVariants]);
+
+  const handleColorChange = (newColor: string) => {
+    setSelectedColor(newColor);
+
+    // Update URL with new query parameters
+    const searchParams = new URLSearchParams({ color: newColor });
+    window.history.replaceState({}, '', `?${searchParams.toString()}`);
+  };
 
   return (
-    <>
+    <div>
       {/* Product Gallery */}
       <ProductGallery images={variantImages} />
 
-      {/* Display Variant Details */}
-      <div className='mt-4'>
+      {/* Variant Details */}
+      <div className="mt-4">
         <div>
-          <strong>SKU:</strong> {selectedVariant?.sku || 'N/A'}
+          <strong>SKU:</strong> {selectedVariant?.sku || product.sku || 'N/A'}
+        </div>
+        <div>
+          <strong>Size:</strong> {selectedVariant?.size || product.size || 'N/A'}
         </div>
         <div>
           <strong>Price:</strong>{' '}
           <ProductPrice
             price={selectedVariant?.price || product.price}
             listPrice={product.listPrice}
-            isDeal={product.tags.includes('todays-deal')}
           />
         </div>
         <div>
-          <strong>Stock:</strong> {selectedVariant?.countInStock || product.countInStock}
+          <strong>Stock:</strong> {stockCount > 0 ? stockCount : 'Out of Stock'}
         </div>
       </div>
 
-      {/* Color Selection */}
-      {product.colors?.length > 0 && (
-        <div className='space-x-2 space-y-2 mt-4'>
+      {/* Color Selector */}
+      {availableColors.length > 0 && (
+        <div className="mt-4">
           <div>Color:</div>
-          {product.colors.map((x: string) => (
-            <Button
-              asChild
-              variant='outline'
-              className={
-                selectedColor === x ? 'border-2 border-primary' : 'border-2'
-              }
-              key={x}
-            >
-              <Link
-                replace
-                scroll={false}
-                href={`?${new URLSearchParams({
-                  color: x,
-                  size: selectedSize,
-                })}`}
+          <div className="flex gap-2">
+            {availableColors.map((colorOption) => (
+              <Button
+                key={colorOption}
+                variant="outline"
+                className={`${
+                  selectedColor === colorOption
+                    ? 'border-2 border-primary'
+                    : 'border'
+                }`}
+                onClick={() => handleColorChange(colorOption)}
               >
                 <div
-                  style={{ backgroundColor: x }}
-                  className='h-4 w-4 rounded-full border border-muted-foreground'
+                  style={{ backgroundColor: colorOption }}
+                  className="h-4 w-4 rounded-full"
                 ></div>
-                {x}
-              </Link>
-            </Button>
-          ))}
+                {colorOption}
+              </Button>
+            ))}
+          </div>
         </div>
       )}
-
-      {/* Size Selection */}
-      {product.sizes?.length > 0 && (
-        <div className='mt-2 space-x-2 space-y-2'>
-          <div>Size:</div>
-          {product.sizes.map((x: string) => (
-            <Button
-              asChild
-              variant='outline'
-              className={
-                selectedSize === x ? 'border-2 border-primary' : 'border-2'
-              }
-              key={x}
-            >
-              <Link
-                replace
-                scroll={false}
-                href={`?${new URLSearchParams({
-                  color: selectedColor,
-                  size: x,
-                })}`}
-              >
-                {x}
-              </Link>
-            </Button>
-          ))}
-        </div>
-      )}
-    </>
-  )
+    </div>
+  );
 }

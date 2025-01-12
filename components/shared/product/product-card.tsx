@@ -79,8 +79,8 @@ const ProductCard = ({
         item={{
           clientId: generateId(),
           product: product._id,
-          size: product.sizes[0],
-          color: product.colors[0],
+          size: product.size,
+          color: product.color,
           countInStock: product.countInStock,
           name: product.name,
           slug: product.slug,
