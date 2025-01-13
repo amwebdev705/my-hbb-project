@@ -1,82 +1,37 @@
-import { getProductBySlug } from '@/lib/actions/product.actions'
-import SelectVariant from '@/components/shared/product/select-variant'
-import ProductPrice from '@/components/shared/product/product-price'
-import { Separator } from '@/components/ui/separator'
-import { Card, CardContent } from '@/components/ui/card'
-import AddToCart from '@/components/shared/product/add-to-cart'
-import { generateId } from '@/lib/utils'
+import ProductDetailsContent from '@/components/shared/product-details-content';
+import { getProductBySlug } from '@/lib/actions/product.actions';
 
 export default async function ProductDetails({
   params,
   searchParams,
 }: {
-  params: Promise<{ slug: string }>
-  searchParams: Promise<{ color?: string; size?: string }>
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{ color?: string }>;
 }) {
-  const paramsObj = await params
-  const { slug } = paramsObj
-  const { color, size } = await searchParams
+  const { slug } = await params;
+  const { color } = await searchParams;
 
-  const product = await getProductBySlug(slug)
+  const product = await getProductBySlug(slug);
 
   if (!product) {
-    return <div>Product not found.</div>
+    return <div>Product not found.</div>;
   }
 
-  const selectedColor = color || product.color?.[0] || ''
-  const selectedSize = size || product.size?.[0] || ''
+  // Normalize color and size
+  const transformedProduct = {
+    ...product,
+    color: Array.isArray(product.color) ? product.color : product.color ? [product.color] : undefined,
+    size: Array.isArray(product.size) ? product.size : product.size ? [product.size] : undefined,
+  };
+
+  const initialVariant =
+    transformedProduct.variants?.find((variant) => variant.color === color) || null;
 
   return (
-    <div>
-      <section>
-        <div className='grid grid-cols-1 md:grid-cols-5'>
-          {/* Left Column: Variants & Gallery */}
-          <div className='col-span-2'>
-            <SelectVariant product={product} color={selectedColor} />
-          </div>
-
-          {/* Center Column: Product Details */}
-          <div className='col-span-2 flex flex-col gap-3 md:p-5'>
-            <p className='p-medium-16 text-grey-500'>Brand {product.brand}</p>
-            <h1 className='font-bold text-lg lg:text-xl'>{product.name}</h1>
-            <Separator />
-            <ProductPrice
-              price={product.price}
-              listPrice={product.listPrice}
-              isDeal={product.tags.includes('todays-deal')}
-            />
-            <Separator className='my-2' />
-            <p className='p-medium-16'>{product.description}</p>
-          </div>
-
-          {/* Right Column: Stock & Cart */}
-          <div>
-            <Card>
-              <CardContent className='p-4 flex flex-col gap-4'>
-                {product.countInStock > 0 ? (
-                  <AddToCart
-                    item={{
-                      product: product._id,
-                      name: product.name,
-                      slug: product.slug,
-                      category: product.category,
-                      price: product.price,
-                      image: product.images[0],
-                      size: selectedSize,
-                      color: selectedColor,
-                      countInStock: product.countInStock,
-                      clientId: generateId(),
-                      quantity: 1,
-                    }}
-                  />
-                ) : (
-                  <div className='text-destructive'>Out of Stock</div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-    </div>
-  )
+    <ProductDetailsContent
+      initialProduct={transformedProduct}
+      initialVariant={initialVariant}
+      initialColor={color || ''}
+    />
+  );
 }

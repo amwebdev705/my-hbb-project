@@ -28,20 +28,22 @@ export const ReviewInputSchema = z.object({
 })
 
 // Define the schema for a single variant
-const ProductVariantSchema = z.object({
+// Variant Schema and Interface
+export const ProductVariantSchema = z.object({
   sku: z.string().optional(),
   images: z.array(z.string()).min(1, 'Product must have at least one image'),
-  // price: z.number().min(0, 'Price must be greater than or equal to 0'),
-  price: Price('Price'),
+  price: z.number().min(0, 'Price must be greater than or equal to 0'),
   countInStock: z.coerce
     .number()
     .int()
-    .nonnegative('count in stock must be a non-negative number'),
-
-  color: z.string().optional(), // Color is optional
-  size: z.string().optional(), // Size is optional
+    .nonnegative('Count in stock must be a non-negative number'),
+  color: z.string().optional(),
+  size: z.string().optional(),
 })
 
+export type Variant = z.infer<typeof ProductVariantSchema>
+
+// Product Input Schema and Interface
 export const ProductInputSchema = z.object({
   name: z.string().min(3, 'Name must be at least 3 characters'),
   slug: z.string().min(3, 'Slug must be at least 3 characters'),
@@ -51,15 +53,18 @@ export const ProductInputSchema = z.object({
   brand: z.string().min(1, 'Brand is required'),
   description: z.string().min(1, 'Description is required'),
   isPublished: z.boolean(),
-  price: Price('Price'),
-  listPrice: Price('List price'),
+  price: z.number().min(0, 'Price must be greater than or equal to 0'),
+  listPrice: z
+    .number()
+    .min(0, 'List price must be greater than or equal to 0')
+    .optional(),
   countInStock: z.coerce
     .number()
     .int()
-    .nonnegative('count in stock must be a non-negative number'),
+    .nonnegative('Count in stock must be a non-negative number'),
   tags: z.array(z.string()).default([]),
-  size: z.string().optional(), // Size is optional
-  color: z.string().optional(),
+  size: z.string().optional(),
+  color: z.string().optional(), // Ensure color is an array
   avgRating: z.coerce
     .number()
     .min(0, 'Average rating must be at least 0')
@@ -71,18 +76,30 @@ export const ProductInputSchema = z.object({
   ratingDistribution: z
     .array(z.object({ rating: z.number(), count: z.number() }))
     .max(5),
-  reviews: z.array(ReviewInputSchema).default([]),
+  reviews: z
+    .array(
+      z.object({ title: z.string(), rating: z.number(), comment: z.string() })
+    )
+    .default([]),
   numSales: z.coerce
     .number()
     .int()
     .nonnegative('Number of sales must be a non-negative number'),
-  variants: z.array(ProductVariantSchema).optional(), // Variants field
+  variants: z.array(ProductVariantSchema).optional(),
 })
 
+export type IProductInput = z.infer<typeof ProductInputSchema>
+
+export interface Product extends IProductInput {
+  _id: string // Unique identifier
+  color?: string // Ensure color is an array
+  variants?: Variant[] // Variants can be undefined
+}
+
+// Product Update Schema
 export const ProductUpdateSchema = ProductInputSchema.extend({
   _id: z.string(),
 })
-
 // Order Item
 export const OrderItemSchema = z.object({
   clientId: z.string().min(1, 'clientId is required'),
@@ -150,8 +167,8 @@ export const OrderInputSchema = z.object({
   isPaid: z.boolean().default(false),
   paidAt: z.date().optional(),
 })
-// Cart
 
+// Cart
 export const CartSchema = z.object({
   items: z
     .array(OrderItemSchema)
@@ -205,6 +222,7 @@ export const UserSignUpSchema = UserSignInSchema.extend({
   message: "Passwords don't match",
   path: ['confirmPassword'],
 })
+
 export const UserNameSchema = z.object({
   name: UserName,
 })
