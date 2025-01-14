@@ -15,10 +15,12 @@ export default function ProductDetailsContent({
   initialProduct,
   initialVariant,
   initialColor,
+  translations,
 }: {
-  initialProduct: Product; // Use the Product type
-  initialVariant: Variant | null; // Use the Variant type
+  initialProduct: Product;
+  initialVariant: Variant | null;
   initialColor: string;
+  translations: Record<string, string>; // Translations as a serializable object
 }) {
   const {
     setProduct,
@@ -30,18 +32,16 @@ export default function ProductDetailsContent({
   } = useProductStore();
 
   useEffect(() => {
-    // Initialize Zustand state
     setProduct(initialProduct);
     setSelectedVariant(initialVariant);
 
-    // If there's an initial color, set it
     if (initialColor) {
       useProductStore.setState({ selectedColor: initialColor });
     }
   }, [initialProduct, initialVariant, initialColor, setProduct, setSelectedVariant]);
 
   if (!product) {
-    return <div>Loading...</div>;
+    return <div>{translations.loading || 'Loading...'}</div>;
   }
 
   const variantImages = selectedVariant?.images || product.images;
@@ -53,14 +53,13 @@ export default function ProductDetailsContent({
   return (
     <section>
       <div className="grid grid-cols-1 md:grid-cols-5">
-        {/* Left Column */}
         <div className="col-span-2">
           <ProductGallery images={variantImages} />
         </div>
-
-        {/* Center Column */}
         <div className="col-span-2 flex flex-col gap-3 md:p-5">
-          <p className="p-medium-16 text-grey-500">Brand {product.brand}</p>
+          <p className="p-medium-16 text-grey-500">
+            {translations.brand} {product.brand}
+          </p>
           <h1 className="font-bold text-lg lg:text-xl">{product.name}</h1>
           <Separator />
           <ProductPrice
@@ -72,29 +71,29 @@ export default function ProductDetailsContent({
           <SelectVariant initialColor={initialColor} />
           <p className="p-medium-16">{product.description}</p>
         </div>
-
-        {/* Right Column */}
         <div>
           <Card>
             <CardContent className="p-4 flex flex-col gap-4">
               {stockCount > 0 ? (
                 <AddToCart
                   item={{
-                    product: selectedVariant?.sku || product._id, // Use variant SKU if available
+                    product: selectedVariant?.sku || product._id,
                     name: product.name,
                     slug: product.slug,
                     category: product.category,
                     price: selectedVariant?.price || product.price,
                     image: selectedVariant?.images?.[0] || product.images[0],
-                    size: selectedSize || '', // Ensure size is passed
-                    color: selectedColor || '', // Ensure color is passed
+                    size: selectedSize || '',
+                    color: selectedColor || '',
                     countInStock: stockCount,
                     clientId: generateId(),
                     quantity: 1,
                   }}
                 />
               ) : (
-                <div className="text-destructive">Out of Stock</div>
+                <div className="text-destructive">
+                  {translations.outOfStock || 'Out of Stock'} 
+                </div>
               )}
             </CardContent>
           </Card>
