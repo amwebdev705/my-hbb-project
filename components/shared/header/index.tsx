@@ -7,6 +7,9 @@ import data from '@/lib/data'
 // import Sidebar from './sidebar'
 // import { getSetting } from '@/lib/actions/setting.actions'
 import { getTranslations } from 'next-intl/server'
+import Prods from '../productsNav'
+// import Navbar4 from '@/components/comps'
+// import ProductsNav from '@/app/[locale]/productsNav'
 
 export default async function Header() {
   // const categories = await getAllCategories()
@@ -50,9 +53,7 @@ export default async function Header() {
               {/* {site.name} */}
             </Link>
           </div>
-          <div className=''>
-            {/* <Search /> */}
-          </div>
+          <div className=''>{/* <Search /> */}</div>
 
           <Menu />
         </div>
@@ -63,6 +64,9 @@ export default async function Header() {
       <div className='flex items-center px-3 mb-[1px]  bg-gray-800'>
         {/* <Sidebar categories={categories} /> */}
         <div className='flex items-center flex-wrap gap-3 overflow-hidden   max-h-[42px]'>
+          {/* <Navbar4/> */}
+          <Prods/>
+  
           {data.headerMenus.map((menu) => (
             <Link
               href={menu.href}
