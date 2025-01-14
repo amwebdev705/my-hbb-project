@@ -37,7 +37,6 @@ export default async function Search() {
       </Select>
       <Input
         className='flex-1 rounded-none dark:border-gray-200 bg-gray-100 text-black text-base h-full'
-        // placeholder={t('Header.Search Site', { name })}
         placeholder={t('Header.Search Site', { name })}
         name='q'
         type='search'
