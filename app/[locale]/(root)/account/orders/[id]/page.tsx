@@ -1,40 +1,30 @@
 import { notFound } from 'next/navigation'
-import React from 'react'
-
-import { auth } from '@/auth'
-import { getOrderById } from '@/lib/actions/order.actions'
-import OrderDetailsForm from '@/components/shared/order/order-details-form'
 import Link from 'next/link'
+import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
+import { getOrderById } from '@/lib/actions/order.actions'
 import { formatId } from '@/lib/utils'
+import OrderDetailsForm from '@/components/shared/order/order-details-form'
 
-// import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
-
-export async function generateMetadata(props: {
+export default async function OrderDetailsPage({
+  params,
+}: {
   params: Promise<{ id: string }>
 }) {
-  const params = await props.params
+  // Ensure `params` is resolved if it's a Promise
+  const resolvedParams = await Promise.resolve(params)
+  const { id } = resolvedParams
 
-  return {
-    title: `Order ${formatId(params.id)}`,
-  }
-}
-
-export default async function OrderDetailsPage(props: {
-  params: Promise<{
-    id: string
-  }>
-}) {
-  const params = await props.params
-
-  const { id } = params
-
+  // Fetch the order by ID
   const order = await getOrderById(id)
   if (!order) notFound()
 
-  const session = await auth()
+  // Fetch session details using KindeAuth
+  const { isAuthenticated, getUser } = getKindeServerSession()
+  const isUserAuthenticated = await isAuthenticated()
+  const user = isUserAuthenticated ? await getUser() : null
 
-  // const { isAuthenticated } = getKindeServerSession()
-  // const session = await isAuthenticated()
+  // Determine if the user is an admin
+  const isAdmin = user?.email === 'Admin'
 
   return (
     <>
@@ -46,10 +36,7 @@ export default async function OrderDetailsPage(props: {
         <span>Order {formatId(order._id)}</span>
       </div>
       <h1 className='h1-bold py-4'>Order {formatId(order._id)}</h1>
-      <OrderDetailsForm
-        order={order}
-        isAdmin={session?.user?.role === 'Admin' || false}
-      />
+      <OrderDetailsForm order={order} isAdmin={isAdmin || false} />
     </>
   )
 }

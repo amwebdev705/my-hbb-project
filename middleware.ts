@@ -1,12 +1,9 @@
+import { NextRequest, NextResponse } from 'next/server'
 import createMiddleware from 'next-intl/middleware'
 import { routing } from './i18n/routing'
+import { withAuth } from '@kinde-oss/kinde-auth-nextjs/middleware'
 
-import NextAuth from 'next-auth'
-import authConfig from './auth.config'
-
-import {withAuth} from "@kinde-oss/kinde-auth-nextjs/middleware";
-
-
+// Define public pages
 const publicPages = [
   '/',
   '/search',
@@ -16,62 +13,60 @@ const publicPages = [
   '/cart/(.*)',
   '/product/(.*)',
   '/page/(.*)',
-  // (/secret requires auth)
 ]
 
+// Create internationalization middleware
 const intlMiddleware = createMiddleware(routing)
-const { auth } = NextAuth(authConfig)
 
-export default auth((req) => {
-  const publicPathnameRegex = RegExp(
-    `^(/(${routing.locales.join('|')}))?(${publicPages
-      .flatMap((p) => (p === '/' ? ['', '/'] : p))
-      .join('|')})/?$`,
-    'i'
-  )
-  const isPublicPage = publicPathnameRegex.test(req.nextUrl.pathname)
+const protectedPaths = [
+  /\/checkout(\/.*)?/,
+  /\/account(\/.*)?/,
+  /\/admin(\/.*)?/,
+]
 
-  if (isPublicPage) {
-    // return NextResponse.next()
-    return intlMiddleware(req)
-  } else {
-    if (!req.auth) {
-      const newUrl = new URL(
-        `/sign-in?callbackUrl=${
-          encodeURIComponent(req.nextUrl.pathname) || '/'
-        }`,
-        req.nextUrl.origin
-      )
-      return Response.redirect(newUrl)
-    } else {
+// Combine KindeAuth with Intl middleware
+const middleware = withAuth(
+  async (req: NextRequest & { auth: { isAuthenticated: boolean } }) => {
+    const { pathname } = req.nextUrl
+
+    // Check if the current page is public
+    const publicPathnameRegex = RegExp(
+      `^(/(${routing.locales.join('|')}))?(${publicPages
+        .flatMap((p) => (p === '/' ? ['', '/'] : p))
+        .join('|')})/?$`,
+      'i'
+    )
+
+    const isPublicPage = publicPathnameRegex.test(pathname)
+
+    if (isPublicPage) {
+      // For public pages, only apply internationalization
       return intlMiddleware(req)
     }
+
+    // For protected pages, ensure authentication
+    if (protectedPaths.some((p) => p.test(pathname))) {
+      const { isAuthenticated } = req.auth
+      if (!isAuthenticated) {
+        const signInUrl = new URL(
+          `/sign-in?callbackUrl=${
+            encodeURIComponent(req.nextUrl.pathname) || '/'
+          }`,
+          req.nextUrl.origin
+        )
+        return NextResponse.redirect(signInUrl)
+      }
+    }
+
+    // Default to applying internationalization middleware
+    return intlMiddleware(req)
   }
-})
+)
 
+// Export the middleware
+export default middleware
+
+// Define the middleware configuration
 export const config = {
-  // Skip all paths that should not be internationalized
-  matcher: ['/((?!api|_next|.*\\..*).*)'],
+  matcher: ['/((?!api|_next|.*\\..*).*)'], // Skip API, Next.js internals, and static assets
 }
-
-
-
-
-// import {withAuth} from "@kinde-oss/kinde-auth-nextjs/middleware";
-
-
-
-// export const config = {
-//   matcher: [
-//     /*
-//      * Match all request paths except for the ones starting with:
-//      * - api (API routes)
-//      * - _next/static (static files)
-//      * - _next/image (image optimization files)
-//      * - favicon.ico, sitemap.xml, robots.txt (metadata files)
-//      */
-//     '/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|$).*)',
-//   ],
-// }
-
-// export default withAuth()

@@ -1,10 +1,9 @@
-import { Metadata } from 'next'
-import Link from 'next/link'
+import { Metadata } from 'next';
+import Link from 'next/link';
 
-import { auth } from '@/auth'
-import DeleteDialog from '@/components/shared/delete-dialog'
-import Pagination from '@/components/shared/pagination'
-import { Button } from '@/components/ui/button'
+import DeleteDialog from '@/components/shared/delete-dialog';
+import Pagination from '@/components/shared/pagination';
+import { Button } from '@/components/ui/button';
 import {
   Table,
   TableBody,
@@ -12,33 +11,45 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'
-import { deleteOrder, getAllOrders } from '@/lib/actions/order.actions'
-import { formatDateTime, formatId } from '@/lib/utils'
-import { IOrderList } from '@/types'
-import ProductPrice from '@/components/shared/product/product-price'
+} from '@/components/ui/table';
+import { deleteOrder, getAllOrders } from '@/lib/actions/order.actions';
+import { formatDateTime, formatId } from '@/lib/utils';
+import { IOrderList } from '@/types';
+import ProductPrice from '@/components/shared/product/product-price';
+import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server';
 
 export const metadata: Metadata = {
   title: 'Admin Orders',
-}
+};
+
 export default async function OrdersPage(props: {
-  searchParams: Promise<{ page: string }>
+  searchParams: Promise<{ page: string }>;
 }) {
-  const searchParams = await props.searchParams
+  const searchParams = await props.searchParams;
+  const { page = '1' } = searchParams;
 
-  const { page = '1' } = searchParams
+  // Fetch session and user details using KindeAuth
+  const { isAuthenticated, getUser } = getKindeServerSession();
+  const isUserAuthenticated = await isAuthenticated();
+  const user = isUserAuthenticated ? await getUser() : null;
 
-  const session = await auth()
-  if (session?.user.role !== 'Admin')
-    throw new Error('Admin permission required')
+  // Check for admin permissions
+  // if (!isUserAuthenticated || !user || user.role !== 'Admin') {
+  //   throw new Error('Admin permission required');
+  // }
+  if (!isUserAuthenticated || !user ) {
+    throw new Error('Admin permission required');
+  }
 
+  // Fetch orders for the current page
   const orders = await getAllOrders({
     page: Number(page),
-  })
+  });
+
   return (
-    <div className='space-y-2'>
-      <h1 className='h1-bold'>Orders</h1>
-      <div className='overflow-x-auto'>
+    <div className="space-y-2">
+      <h1 className="h1-bold">Orders</h1>
+      <div className="overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
@@ -62,7 +73,6 @@ export default async function OrdersPage(props: {
                   {order.user ? order.user.name : 'Deleted User'}
                 </TableCell>
                 <TableCell>
-                  {' '}
                   <ProductPrice price={order.totalPrice} plain />
                 </TableCell>
                 <TableCell>
@@ -75,8 +85,8 @@ export default async function OrdersPage(props: {
                     ? formatDateTime(order.deliveredAt).dateTime
                     : 'No'}
                 </TableCell>
-                <TableCell className='flex gap-1'>
-                  <Button asChild variant='outline' size='sm'>
+                <TableCell className="flex gap-1">
+                  <Button asChild variant="outline" size="sm">
                     <Link href={`/admin/orders/${order._id}`}>Details</Link>
                   </Button>
                   <DeleteDialog id={order._id} action={deleteOrder} />
@@ -90,5 +100,5 @@ export default async function OrdersPage(props: {
         )}
       </div>
     </div>
-  )
+  );
 }

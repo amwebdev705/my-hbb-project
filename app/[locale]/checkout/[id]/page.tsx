@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import React from 'react'
 
-import { auth } from '@/auth'
+import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
 import { getOrderById } from '@/lib/actions/order.actions'
 import PaymentForm from './payment-form'
 import Stripe from 'stripe'
@@ -22,7 +22,9 @@ const CheckoutPaymentPage = async (props: {
   const order = await getOrderById(id)
   if (!order) notFound()
 
-  const session = await auth()
+  const { isAuthenticated, getUser } = getKindeServerSession()
+  const isUserAuthenticated = await isAuthenticated()
+  const user = isUserAuthenticated ? await getUser() : null
 
   let client_secret = null
   if (order.paymentMethod === 'Stripe' && !order.isPaid) {
@@ -39,7 +41,7 @@ const CheckoutPaymentPage = async (props: {
       order={order}
       paypalClientId={process.env.PAYPAL_CLIENT_ID || 'sb'}
       clientSecret={client_secret}
-      isAdmin={session?.user?.role === 'Admin' || false}
+      isAdmin={user?.email === 'Admin' || false}
     />
   )
 }

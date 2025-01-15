@@ -1,7 +1,6 @@
 import { createUploadthing, type FileRouter } from 'uploadthing/next'
 import { UploadThingError } from 'uploadthing/server'
-import { auth } from '@/auth'
-
+import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
 
 const f = createUploadthing()
 
@@ -11,24 +10,32 @@ export const ourFileRouter = {
   imageUploader: f({ image: { maxFileSize: '4MB' } })
     // Set permissions and file types for this FileRoute
     .middleware(async () => {
-      // This code runs on your server before upload
-      const session = await auth()
-//       import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
+      // Fetch session and user details using KindeAuth
+      const { isAuthenticated, getUser } = getKindeServerSession()
+      const isUserAuthenticated = await isAuthenticated()
 
-// const { isAuthenticated } = getKindeServerSession()
-// const session = await isAuthenticated()
+      // If the user is not authenticated, throw an error
+      if (!isUserAuthenticated) {
+        throw new UploadThingError('Unauthorized')
+      }
 
-      // If you throw, the user will not be able to upload
-      if (!session) throw new UploadThingError('Unauthorized')
+      const user = await getUser()
 
-      // Whatever is returned here is accessible in onUploadComplete as `metadata`
-      return { userId: session?.user?.id }
+      // Ensure user details are valid
+      if (!user || !user.id) {
+        throw new UploadThingError('Unauthorized')
+      }
+
+      // Return userId as metadata for further processing
+      return { userId: user.id }
     })
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     .onUploadComplete(async ({ metadata, file }) => {
       // This code RUNS ON YOUR SERVER after upload
+      console.log(`File uploaded by user ${metadata.userId}:`, file)
 
-      // !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback
+      // Optional: Handle additional logic like saving file metadata to a database
+
+      // Return metadata to the client
       return { uploadedBy: metadata.userId }
     }),
 } satisfies FileRouter

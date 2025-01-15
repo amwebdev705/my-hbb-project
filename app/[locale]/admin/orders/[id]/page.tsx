@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import React from 'react'
 
-import { auth } from '@/auth'
+import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
 import { getOrderById } from '@/lib/actions/order.actions'
 import OrderDetailsForm from '@/components/shared/order/order-details-form'
 import Link from 'next/link'
@@ -22,7 +22,9 @@ const AdminOrderDetailsPage = async (props: {
   const order = await getOrderById(id)
   if (!order) notFound()
 
-  const session = await auth()
+  const { isAuthenticated, getUser } = getKindeServerSession()
+  const isUserAuthenticated = await isAuthenticated()
+  const user = isUserAuthenticated ? await getUser() : null
 
   return (
     <main className='max-w-6xl mx-auto p-4'>
@@ -32,7 +34,7 @@ const AdminOrderDetailsPage = async (props: {
       </div>
       <OrderDetailsForm
         order={order}
-        isAdmin={session?.user?.role === 'Admin' || false}
+        isAdmin={user?.email === 'Admin' || false}
       />
     </main>
   )
