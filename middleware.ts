@@ -4,6 +4,9 @@ import { routing } from './i18n/routing'
 import NextAuth from 'next-auth'
 import authConfig from './auth.config'
 
+import {withAuth} from "@kinde-oss/kinde-auth-nextjs/middleware";
+
+
 const publicPages = [
   '/',
   '/search',
@@ -50,3 +53,25 @@ export const config = {
   // Skip all paths that should not be internationalized
   matcher: ['/((?!api|_next|.*\\..*).*)'],
 }
+
+
+
+
+// import {withAuth} from "@kinde-oss/kinde-auth-nextjs/middleware";
+
+
+
+// export const config = {
+//   matcher: [
+//     /*
+//      * Match all request paths except for the ones starting with:
+//      * - api (API routes)
+//      * - _next/static (static files)
+//      * - _next/image (image optimization files)
+//      * - favicon.ico, sitemap.xml, robots.txt (metadata files)
+//      */
+//     '/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|$).*)',
+//   ],
+// }
+
+// export default withAuth()

@@ -2,6 +2,7 @@ import { createUploadthing, type FileRouter } from 'uploadthing/next'
 import { UploadThingError } from 'uploadthing/server'
 import { auth } from '@/auth'
 
+
 const f = createUploadthing()
 
 // FileRouter for your app, can contain multiple FileRoutes
@@ -12,6 +13,10 @@ export const ourFileRouter = {
     .middleware(async () => {
       // This code runs on your server before upload
       const session = await auth()
+//       import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
+
+// const { isAuthenticated } = getKindeServerSession()
+// const session = await isAuthenticated()
 
       // If you throw, the user will not be able to upload
       if (!session) throw new UploadThingError('Unauthorized')

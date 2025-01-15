@@ -9,15 +9,25 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { SignOut } from '@/lib/actions/user.actions'
+// import { SignOut } from '@/lib/actions/user.actions'
 import { cn } from '@/lib/utils'
+import { LoginLink, LogoutLink } from '@kinde-oss/kinde-auth-nextjs/components'
 import { ChevronDownIcon } from 'lucide-react'
 import { getTranslations } from 'next-intl/server'
 import Link from 'next/link'
 
+
+
+
 export default async function UserButton() {
   const t = await getTranslations()
   const session = await auth()
+  // import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
+
+  // const { isAuthenticated } = getKindeServerSession()
+  // const session = await isAuthenticated()
+
+
   return (
     <div className='flex gap-2 items-center'>
       <DropdownMenu>
@@ -60,20 +70,23 @@ export default async function UserButton() {
               )}
             </DropdownMenuGroup>
             <DropdownMenuItem className='p-0 mb-1'>
-              <form action={SignOut} className='w-full'>
+              {/* <form action={SignOut} className='w-full'>
                 <Button
                   className='w-full py-4 px-2 h-4 justify-start'
                   variant='ghost'
                 >
                   {t('Header.Sign out')}
                 </Button>
-              </form>
+              </form> */}
+
+              <LogoutLink> {t('Header.Sign out')}</LogoutLink>
             </DropdownMenuItem>
           </DropdownMenuContent>
         ) : (
           <DropdownMenuContent className='w-56' align='end' forceMount>
             <DropdownMenuGroup>
               <DropdownMenuItem>
+                <Button><LoginLink> {t('Header.Sign in')}</LoginLink></Button>
                 <Link
                   className={cn(buttonVariants(), 'w-full')}
                   href='/sign-in'

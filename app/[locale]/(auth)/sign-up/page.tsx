@@ -1,10 +1,11 @@
 import { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 
-import { auth } from '@/auth'
+// import { auth } from '@/auth'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 import SignUpForm from './signup-form'
+  import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
 
 export const metadata: Metadata = {
   title: 'Sign Up',
@@ -19,7 +20,12 @@ export default async function SignUpPage(props: {
 
   const { callbackUrl } = searchParams
 
-  const session = await auth()
+
+
+const { isAuthenticated } = getKindeServerSession()
+const session = await isAuthenticated()
+
+  // const session = await auth()
   if (session) {
     return redirect(callbackUrl || '/')
   }

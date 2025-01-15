@@ -15,6 +15,11 @@ const nextConfig: NextConfig = withNextIntl()({
         hostname: 'du9gmflrz1.ufs.sh',
         port: '',
       },
+      {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com',
+        port: '',
+      },
     ],
   },
 })

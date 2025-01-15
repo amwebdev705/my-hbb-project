@@ -9,8 +9,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { SignOut } from '@/lib/actions/user.actions'
+// import { SignOut } from '@/lib/actions/user.actions'
 import { cn } from '@/lib/utils'
+import { LogoutLink } from '@kinde-oss/kinde-auth-nextjs/components'
 import { ChevronDownIcon } from 'lucide-react'
 import { getTranslations } from 'next-intl/server'
 import Link from 'next/link'
@@ -60,14 +61,17 @@ export default async function UserButton() {
               )}
             </DropdownMenuGroup>
             <DropdownMenuItem className='p-0 mb-1'>
-              <form action={SignOut} className='w-full'>
+              {/* <form action={SignOut} className='w-full'>
                 <Button
                   className='w-full py-4 px-2 h-4 justify-start'
                   variant='ghost'
                 >
                   {t('Header.Sign out')}
                 </Button>
-              </form>
+              </form> */}
+              <Button>
+                <LogoutLink> {t('Header.Sign out')}</LogoutLink>
+              </Button>
             </DropdownMenuItem>
           </DropdownMenuContent>
         ) : (

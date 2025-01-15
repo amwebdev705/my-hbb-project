@@ -7,6 +7,8 @@ import OrderDetailsForm from '@/components/shared/order/order-details-form'
 import Link from 'next/link'
 import { formatId } from '@/lib/utils'
 
+// import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
+
 export async function generateMetadata(props: {
   params: Promise<{ id: string }>
 }) {
@@ -30,6 +32,9 @@ export default async function OrderDetailsPage(props: {
   if (!order) notFound()
 
   const session = await auth()
+
+  // const { isAuthenticated } = getKindeServerSession()
+  // const session = await isAuthenticated()
 
   return (
     <>

@@ -8,6 +8,8 @@ import data from '@/lib/data'
 // import { getSetting } from '@/lib/actions/setting.actions'
 import { getTranslations } from 'next-intl/server'
 import Prods from '../productsNav'
+import { LoginLink, LogoutLink, RegisterLink } from '@kinde-oss/kinde-auth-nextjs/components'
+import { Button } from '@/components/ui/button'
 // import Navbar4 from '@/components/comps'
 // import ProductsNav from '@/app/[locale]/productsNav'
 
@@ -35,6 +37,10 @@ export default async function Header() {
               {site.name}
             </Link> */}
           </div>
+          <Button><LoginLink>Sign In</LoginLink></Button>
+          <Button><RegisterLink>Sign Up</RegisterLink></Button>
+          <Button><LogoutLink>Logout</LogoutLink></Button>
+          
 
           <div className='hidden md:block flex-1 max-w-xl'>
             <Link
@@ -66,7 +72,6 @@ export default async function Header() {
         <div className='flex items-center flex-wrap gap-3 overflow-hidden   max-h-[42px]'>
           {/* <Navbar4/> */}
           <Prods/>
-  
           {data.headerMenus.map((menu) => (
             <Link
               href={menu.href}

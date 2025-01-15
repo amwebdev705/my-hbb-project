@@ -8,11 +8,20 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { Button } from '@/components/ui/button'
 
+  // import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
+
+
 const PAGE_TITLE = 'Login & Security'
 export const metadata: Metadata = {
   title: PAGE_TITLE,
 }
 export default async function ProfilePage() {
+
+
+
+  // const { isAuthenticated } = getKindeServerSession()
+  // const session = await isAuthenticated()
+
   const session = await auth()
   return (
     <div className='mb-24'>
