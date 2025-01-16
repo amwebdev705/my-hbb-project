@@ -1,10 +1,10 @@
-import { Metadata } from 'next';
-import Link from 'next/link';
-
-import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server';
-import DeleteDialog from '@/components/shared/delete-dialog';
-import Pagination from '@/components/shared/pagination';
-import { Button } from '@/components/ui/button';
+import { Metadata } from 'next'
+import Link from 'next/link'
+import { redirect } from 'next/navigation'
+import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
+import DeleteDialog from '@/components/shared/delete-dialog'
+import Pagination from '@/components/shared/pagination'
+import { Button } from '@/components/ui/button'
 import {
   Table,
   TableBody,
@@ -12,37 +12,40 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { deleteUser, getAllUsers } from '@/lib/actions/user.actions';
-import { IUser } from '@/lib/db/models/user.model';
-import { formatId } from '@/lib/utils';
+} from '@/components/ui/table'
+import { deleteUser, getAllUsers } from '@/lib/actions/user.actions'
+import { IUser } from '@/lib/db/models/user.model'
+import { formatId } from '@/lib/utils'
+
 
 export const metadata: Metadata = {
   title: 'Admin Users',
-};
+}
 
 export default async function AdminUser(props: {
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<{ page?: string }>; // Awaitable type
 }) {
-  const { searchParams } = props;
+  // Await the `searchParams`
+  const resolvedSearchParams = await props.searchParams;
 
   // Fetch authentication details using KindeAuth
-  const { isAuthenticated, getUser } = getKindeServerSession();
-  const isUserAuthenticated = await isAuthenticated();
-  const user = isUserAuthenticated ? await getUser() : null;
+  const { getUser, getPermission } = getKindeServerSession();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const user = await getUser();
+  const adminPermission = await getPermission('admin-access');
+  const isAdmin = adminPermission?.isGranted;
 
-  // Ensure the user has admin permissions
-  if (!isUserAuthenticated || user?.email !== 'Admin') {
-    throw new Error('Admin permission required');
+  // If the user does not have admin permissions, redirect to the homepage
+  if (!isAdmin) {
+    redirect('/');
+    return null; // Prevent further rendering
   }
 
-  // Parse page number from search params
-  const page = Number((await searchParams).page) || 1;
+  // Parse page number from resolved search params
+  const page = Number(resolvedSearchParams.page) || 1;
 
   // Fetch users for the admin dashboard
-  const users = await getAllUsers({
-    page,
-  });
+  const users = await getAllUsers({ page });
 
   return (
     <div className="space-y-2">
@@ -62,9 +65,9 @@ export default async function AdminUser(props: {
             {users?.data.map((user: IUser) => (
               <TableRow key={user._id}>
                 <TableCell>{formatId(user._id)}</TableCell>
-                <TableCell>{user.firstName}</TableCell>
+                <TableCell>{user.name}</TableCell>
                 <TableCell>{user.email}</TableCell>
-                {/* <TableCell>{user.role}</TableCell> */}
+                <TableCell>{user.role}</TableCell>
                 <TableCell className="flex gap-1">
                   <Button asChild variant="outline" size="sm">
                     <Link href={`/admin/users/${user._id}`}>Edit</Link>

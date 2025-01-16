@@ -3,6 +3,7 @@
 import { Cart, IOrderList, OrderItem, ShippingAddress } from '@/types'
 import { formatError, round2 } from '../utils'
 import { connectToDatabase } from '../db'
+import { auth } from '@/auth'
 import { OrderInputSchema } from '../validator'
 import Order, { IOrder } from '../db/models/order.model'
 import { revalidatePath } from 'next/cache'
@@ -13,29 +14,18 @@ import Product from '../db/models/product.model'
 import User from '../db/models/user.model'
 import mongoose from 'mongoose'
 import { getSetting } from './setting.actions'
-import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
 
 // CREATE
 export const createOrder = async (clientSideCart: Cart) => {
   try {
     await connectToDatabase()
-
-    // Use KindeAuth to authenticate the user
-    const { isAuthenticated, getUser } = getKindeServerSession()
-    const isUserAuthenticated = await isAuthenticated()
-
-    if (!isUserAuthenticated) {
-      throw new Error('User is not authenticated')
-    }
-
-    const user = await getUser()
-
-    if (!user || !user.id) {
-      throw new Error('Failed to retrieve user information')
-    }
-
-    // Recalculate price and delivery date on the server
-    const createdOrder = await createOrderFromCart(clientSideCart, user.id)
+    const session = await auth()
+    if (!session) throw new Error('User not authenticated')
+    // recalculate price and delivery date on the server
+    const createdOrder = await createOrderFromCart(
+      clientSideCart,
+      session.user.id!
+    )
     return {
       success: true,
       message: 'Order placed successfully',
@@ -45,19 +35,17 @@ export const createOrder = async (clientSideCart: Cart) => {
     return { success: false, message: formatError(error) }
   }
 }
-
-// CREATE ORDER FROM CART
 export const createOrderFromCart = async (
   clientSideCart: Cart,
   userId: string
 ) => {
   const cart = {
     ...clientSideCart,
-    ...(await calcDeliveryDateAndPrice({
+    ...calcDeliveryDateAndPrice({
       items: clientSideCart.items,
       shippingAddress: clientSideCart.shippingAddress,
       deliveryDateIndex: clientSideCart.deliveryDateIndex,
-    })),
+    }),
   }
 
   const order = OrderInputSchema.parse({
@@ -71,44 +59,29 @@ export const createOrderFromCart = async (
     totalPrice: cart.totalPrice,
     expectedDeliveryDate: cart.expectedDeliveryDate,
   })
-
   return await Order.create(order)
 }
 
-// UPDATE ORDER TO PAID
 export async function updateOrderToPaid(orderId: string) {
   try {
     await connectToDatabase()
-
     const order = await Order.findById(orderId).populate<{
       user: { email: string; name: string }
     }>('user', 'name email')
-
     if (!order) throw new Error('Order not found')
     if (order.isPaid) throw new Error('Order is already paid')
-
     order.isPaid = true
     order.paidAt = new Date()
     await order.save()
-
-    // Update product stock only if the database is not local
-    if (!process.env.MONGODB_URI?.startsWith('mongodb://localhost')) {
+    if (!process.env.MONGODB_URI?.startsWith('mongodb://localhost'))
       await updateProductStock(order._id)
-    }
-
-    // Send a purchase receipt
-    if (order.user.email) {
-      await sendPurchaseReceipt({ order })
-    }
-
+    if (order.user.email) await sendPurchaseReceipt({ order })
     revalidatePath(`/account/orders/${orderId}`)
     return { success: true, message: 'Order paid successfully' }
   } catch (err) {
     return { success: false, message: formatError(err) }
   }
 }
-
-// UPDATE PRODUCT STOCK
 const updateProductStock = async (orderId: string) => {
   const session = await mongoose.connection.startSession()
 
@@ -143,8 +116,6 @@ const updateProductStock = async (orderId: string) => {
     throw error
   }
 }
-
-// DELIVER ORDER
 export async function deliverOrder(orderId: string) {
   try {
     await connectToDatabase()
@@ -181,6 +152,7 @@ export async function deleteOrder(id: string) {
 }
 
 // GET ALL ORDERS
+
 export async function getAllOrders({
   limit,
   page,
@@ -205,8 +177,6 @@ export async function getAllOrders({
     totalPages: Math.ceil(ordersCount / limit),
   }
 }
-
-// GET MY ORDERS
 export async function getMyOrders({
   limit,
   page,
@@ -214,55 +184,35 @@ export async function getMyOrders({
   limit?: number
   page: number
 }) {
-  // Fetch common settings
   const {
     common: { pageSize },
   } = await getSetting()
-
   limit = limit || pageSize
-
-  // Ensure database connection
   await connectToDatabase()
-
-  // Fetch user details via KindeAuth
-  const { isAuthenticated, getUser } = getKindeServerSession()
-  const isUserAuthenticated = await isAuthenticated()
-
-  if (!isUserAuthenticated) {
+  const session = await auth()
+  if (!session) {
     throw new Error('User is not authenticated')
   }
-
-  const user = await getUser()
-
-  if (!user || !user.id) {
-    throw new Error('Failed to retrieve user information')
-  }
-
   const skipAmount = (Number(page) - 1) * limit
-
-  // Fetch user orders
-  const orders = await Order.find({ user: user.id })
+  const orders = await Order.find({
+    user: session?.user?.id,
+  })
     .sort({ createdAt: 'desc' })
     .skip(skipAmount)
     .limit(limit)
-
-  // Count total orders for pagination
-  const ordersCount = await Order.countDocuments({ user: user.id })
+  const ordersCount = await Order.countDocuments({ user: session?.user?.id })
 
   return {
     data: JSON.parse(JSON.stringify(orders)),
     totalPages: Math.ceil(ordersCount / limit),
   }
 }
-
-// GET ORDER BY ID
 export async function getOrderById(orderId: string): Promise<IOrder> {
   await connectToDatabase()
   const order = await Order.findById(orderId)
   return JSON.parse(JSON.stringify(order))
 }
 
-// CREATE PAYPAL ORDER
 export async function createPayPalOrder(orderId: string) {
   await connectToDatabase()
   try {
@@ -289,7 +239,6 @@ export async function createPayPalOrder(orderId: string) {
   }
 }
 
-// APPROVE PAYPAL ORDER
 export async function approvePayPalOrder(
   orderId: string,
   data: { orderID: string }
@@ -327,7 +276,6 @@ export async function approvePayPalOrder(
   }
 }
 
-// CALC DELIVERY DATE AND PRICE
 export const calcDeliveryDateAndPrice = async ({
   items,
   shippingAddress,
@@ -338,7 +286,6 @@ export const calcDeliveryDateAndPrice = async ({
   shippingAddress?: ShippingAddress
 }) => {
   const { availableDeliveryDates } = await getSetting()
-
   const itemsPrice = round2(
     items.reduce((acc, item) => acc + item.price * item.quantity, 0)
   )
@@ -349,7 +296,6 @@ export const calcDeliveryDateAndPrice = async ({
         ? availableDeliveryDates.length - 1
         : deliveryDateIndex
     ]
-
   const shippingPrice =
     !shippingAddress || !deliveryDate
       ? undefined
@@ -364,7 +310,6 @@ export const calcDeliveryDateAndPrice = async ({
       (shippingPrice ? round2(shippingPrice) : 0) +
       (taxPrice ? round2(taxPrice) : 0)
   )
-
   return {
     availableDeliveryDates,
     deliveryDateIndex:
@@ -474,7 +419,6 @@ export async function getOrderSummary(date: DateRange) {
   }
 }
 
-// GET SALES CHART
 async function getSalesChartData(date: DateRange) {
   const result = await Order.aggregate([
     {
@@ -516,7 +460,6 @@ async function getSalesChartData(date: DateRange) {
   return result
 }
 
-// GET TOP SALES PRODUCTS
 async function getTopSalesProducts(date: DateRange) {
   const result = await Order.aggregate([
     {
@@ -568,7 +511,6 @@ async function getTopSalesProducts(date: DateRange) {
   return result
 }
 
-// GET TOP SALES CATEGORIES
 async function getTopSalesCategories(date: DateRange, limit = 5) {
   const result = await Order.aggregate([
     {
@@ -595,7 +537,4 @@ async function getTopSalesCategories(date: DateRange, limit = 5) {
   ])
 
   return result
-  // }
-  //     function calcDeliveryDateAndPrice(arg0: { items: { clientId: string; product: string; name: string; slug: string; category: string; quantity: number; countInStock: number; image: string; price: number; size?: string | undefined; color?: string | undefined }[]; shippingAddress: { fullName: string; street: string; city: string; postalCode: string; state: string; phone: string; country: string } | undefined; deliveryDateIndex: number | undefined }) {
-  //       throw new Error('Function not implemented.')
 }

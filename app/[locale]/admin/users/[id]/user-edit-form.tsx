@@ -15,18 +15,19 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-// import {
-//   Select,
-//   SelectContent,
-//   SelectItem,
-//   SelectTrigger,
-//   SelectValue,
-// } from '@/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { useToast } from '@/hooks/use-toast'
 import { updateUser } from '@/lib/actions/user.actions'
-// import { USER_ROLES } from '@/lib/constants'
+import { USER_ROLES } from '@/lib/constants'
 import { IUser } from '@/lib/db/models/user.model'
 import { UserUpdateSchema } from '@/lib/validator'
+
 
 const UserEditForm = ({ user }: { user: IUser }) => {
   const router = useRouter()
@@ -98,7 +99,7 @@ const UserEditForm = ({ user }: { user: IUser }) => {
             )}
           />
         </div>
-        {/* <div>
+        <div>
           <FormField
             control={form.control}
             name='role'
@@ -127,7 +128,7 @@ const UserEditForm = ({ user }: { user: IUser }) => {
               </FormItem>
             )}
           />
-        </div> */}
+        </div>
         <div className='flex-between'>
           <Button type='submit' disabled={form.formState.isSubmitting}>
             {form.formState.isSubmitting ? 'Submitting...' : `Update User `}

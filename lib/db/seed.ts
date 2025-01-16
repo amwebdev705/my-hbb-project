@@ -102,7 +102,6 @@ const generateOrder = async (
         : (i % products.length) + 1
     ]
   )
-
   const product3 = await Product.findById(
     products[
       i % products.length >= products.length - 2
@@ -149,17 +148,14 @@ const generateOrder = async (
     },
   ]
 
-  const user = data.users[i % users.length]
-  const paymentMethod = user.paymentMethod || 'Unknown' // Ensure a default value
-
   const order = {
     user: users[i % users.length],
     items: items.map((item) => ({
       ...item,
       product: item.product,
     })),
-    shippingAddress: user.address,
-    paymentMethod, // Use the resolved or default paymentMethod
+    shippingAddress: data.users[i % users.length].address,
+    paymentMethod: data.users[i % users.length].paymentMethod,
     isPaid: true,
     isDelivered: true,
     paidAt: calculatePastDate(i),
@@ -168,7 +164,7 @@ const generateOrder = async (
     expectedDeliveryDate: calculateFutureDate(i % 2),
     ...calcDeliveryDateAndPriceForSeed({
       items: items,
-      shippingAddress: user.address,
+      shippingAddress: data.users[i % users.length].address,
       deliveryDateIndex: i % 2,
     }),
   }

@@ -8,11 +8,12 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet'
 import CartButton from './cart-button'
-import UserButton from './user-button'
+// import UserButton from './user-button'
 import ThemeSwitcher from './theme-switcher'
 import LanguageSwitcher from './language-switcher'
 import { useTranslations } from 'next-intl'
 import Search from './search'
+import UserButton from '../topHeader/user-button'
 
 const Menu = ({ forAdmin = false }: { forAdmin?: boolean }) => {
   const t = useTranslations()
@@ -22,7 +23,7 @@ const Menu = ({ forAdmin = false }: { forAdmin?: boolean }) => {
         {/* <LanguageSwitcher /> */}
         {/* <ThemeSwitcher /> */}
         {/* <UserButton /> */}
-        <Search/>
+        <Search />
         {forAdmin ? null : <CartButton />}
       </nav>
       <nav className='md:hidden'>

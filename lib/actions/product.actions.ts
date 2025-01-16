@@ -8,14 +8,21 @@ import { ProductInputSchema, ProductUpdateSchema } from '../validator'
 import { IProductInput } from '@/types'
 import { z } from 'zod'
 import { getSetting } from './setting.actions'
+import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
+import { redirect } from 'next/navigation'
 
 // CREATE
 export async function createProduct(data: IProductInput) {
+    const { isAuthenticated } = getKindeServerSession()
+    const isLoggedIn = await isAuthenticated()
+    if (!isLoggedIn) {
+      redirect('/api/auth/login')
+    }
   try {
     const product = ProductInputSchema.parse(data)
     await connectToDatabase()
     await Product.create(product)
-    revalidatePath('/admin/products')
+    revalidatePath('/admin/products/create')
     return {
       success: true,
       message: 'Product created successfully',

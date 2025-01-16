@@ -1,30 +1,35 @@
 import { notFound } from 'next/navigation'
-import Link from 'next/link'
-import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
-import { getOrderById } from '@/lib/actions/order.actions'
-import { formatId } from '@/lib/utils'
-import OrderDetailsForm from '@/components/shared/order/order-details-form'
+import React from 'react'
 
-export default async function OrderDetailsPage({
-  params,
-}: {
+import { auth } from '@/auth'
+import { getOrderById } from '@/lib/actions/order.actions'
+import OrderDetailsForm from '@/components/shared/order/order-details-form'
+import Link from 'next/link'
+import { formatId } from '@/lib/utils'
+
+export async function generateMetadata(props: {
   params: Promise<{ id: string }>
 }) {
-  // Ensure `params` is resolved if it's a Promise
-  const resolvedParams = await Promise.resolve(params)
-  const { id } = resolvedParams
+  const params = await props.params
 
-  // Fetch the order by ID
+  return {
+    title: `Order ${formatId(params.id)}`,
+  }
+}
+
+export default async function OrderDetailsPage(props: {
+  params: Promise<{
+    id: string
+  }>
+}) {
+  const params = await props.params
+
+  const { id } = params
+
   const order = await getOrderById(id)
   if (!order) notFound()
 
-  // Fetch session details using KindeAuth
-  const { isAuthenticated, getUser } = getKindeServerSession()
-  const isUserAuthenticated = await isAuthenticated()
-  const user = isUserAuthenticated ? await getUser() : null
-
-  // Determine if the user is an admin
-  const isAdmin = user?.email === 'Admin'
+  const session = await auth()
 
   return (
     <>
@@ -36,7 +41,10 @@ export default async function OrderDetailsPage({
         <span>Order {formatId(order._id)}</span>
       </div>
       <h1 className='h1-bold py-4'>Order {formatId(order._id)}</h1>
-      <OrderDetailsForm order={order} isAdmin={isAdmin || false} />
+      <OrderDetailsForm
+        order={order}
+        isAdmin={session?.user?.role === 'Admin' || false}
+      />
     </>
   )
 }

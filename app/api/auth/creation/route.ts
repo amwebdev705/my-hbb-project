@@ -1,6 +1,7 @@
 import { connectToDatabase } from '@/lib/db'
 import User from '@/lib/db/models/user.model'
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
+import { NextResponse } from 'next/server'
 
 export async function GET() {
   const { getUser } = getKindeServerSession()
@@ -29,24 +30,19 @@ export async function GET() {
           user.picture ?? `https://avatar.vercel.sh/${user.given_name}`,
       })
 
-      await dbUser.save();
+      await dbUser.save()
     } else {
       // Optionally update user details if necessary
-      dbUser.lastLogin = new Date();
-      dbUser.firstName = user.given_name || dbUser.firstName;
-      dbUser.lastName = user.family_name || dbUser.lastName;
-      dbUser.profileImage = user.picture || dbUser.profileImage;
+      dbUser.lastLogin = new Date()
+      dbUser.firstName = user.given_name || dbUser.firstName
+      dbUser.lastName = user.family_name || dbUser.lastName
+      dbUser.profileImage = user.picture || dbUser.profileImage
 
-      await dbUser.save();
+      await dbUser.save()
     }
 
     // Redirect to the homepage
-    return new Response(null, {
-      status: 302,
-      headers: {
-        Location: '/', // Adjusted to '/' for better clarity as a homepage route
-      },
-    })
+    return NextResponse.redirect('http://localhost:3000')
   } catch (error) {
     console.error('Error processing user data:', error)
 

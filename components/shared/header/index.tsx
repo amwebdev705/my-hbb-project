@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import Link from 'next/link'
+
 // import { getAllCategories } from '@/lib/actions/product.actions'
 import Menu from './menu'
 import Search from './search'
@@ -7,9 +7,9 @@ import data from '@/lib/data'
 // import Sidebar from './sidebar'
 // import { getSetting } from '@/lib/actions/setting.actions'
 import { getTranslations } from 'next-intl/server'
-import Prods from '../productsNav'
-import { LoginLink, LogoutLink, RegisterLink } from '@kinde-oss/kinde-auth-nextjs/components'
-import { Button } from '@/components/ui/button'
+import Link from 'next/link'
+
+
 // import Navbar4 from '@/components/comps'
 // import ProductsNav from '@/app/[locale]/productsNav'
 
@@ -22,7 +22,10 @@ export default async function Header() {
       <div className='px-2'>
         <div className='flex items-center justify-between'>
           <div className='flex items-center'>
-            <div>About Us | </div>
+            <div>
+              <Link href='/about'>About Us |</Link>
+             
+            </div>
             <div>Shop | </div>
             {/* <Link
               href='/'
@@ -37,10 +40,6 @@ export default async function Header() {
               {site.name}
             </Link> */}
           </div>
-          <Button><LoginLink>Sign In</LoginLink></Button>
-          <Button><RegisterLink>Sign Up</RegisterLink></Button>
-          <Button><LogoutLink>Logout</LogoutLink></Button>
-          
 
           <div className='hidden md:block flex-1 max-w-xl'>
             <Link
@@ -71,7 +70,9 @@ export default async function Header() {
         {/* <Sidebar categories={categories} /> */}
         <div className='flex items-center flex-wrap gap-3 overflow-hidden   max-h-[42px]'>
           {/* <Navbar4/> */}
-          <Prods/>
+          {/* <Prods/> */}
+     
+
           {data.headerMenus.map((menu) => (
             <Link
               href={menu.href}

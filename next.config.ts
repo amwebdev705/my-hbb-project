@@ -20,6 +20,11 @@ const nextConfig: NextConfig = withNextIntl()({
         hostname: 'lh3.googleusercontent.com',
         port: '',
       },
+      {
+        protocol: 'https',
+        hostname: 'gravatar.com',
+        port: '',
+      },
     ],
   },
 })

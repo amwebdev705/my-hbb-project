@@ -161,9 +161,31 @@ export const formatDateTime = (dateString: Date) => {
   }
 }
 
-export function formatId(id: string) {
-  return `..${id.substring(id.length - 6)}`
+// export function formatId(id: string) {
+//   return `..${id.substring(id.length - 6)}`
+// }
+
+export function formatId(id: string | null | undefined): string {
+  // Check if id is null or undefined
+  if (id == null) {
+    // Return a placeholder or an empty string
+    return '';
+  }
+
+  // Ensure id is at least 6 characters long
+  const idLength = id.length;
+  if (idLength < 6) {
+    // Return the entire id prefixed with '..' if it's too short
+    return `..${id}`;
+  }
+
+  // Return the last 6 characters of the id prefixed with '..'
+  return `..${id.substring(idLength - 6)}`;
 }
+
+
+
+console.log('formatId', formatId)
 
 export const getFilterUrl = ({
   params,
