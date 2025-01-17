@@ -1,8 +1,7 @@
 import { Data, IProductInput, IUserInput } from '@/types'
 import { toSlug } from './utils'
 import bcrypt from 'bcryptjs'
-import {i18n} from '@/i18n-config'
-
+import { i18n } from '@/i18n-config'
 
 const users: IUserInput[] = [
   {
@@ -271,6 +270,7 @@ const products: IProductInput[] = [
     images: ['/images/p11-1.jpg', '/images/p11-2.jpg'],
     tags: ['new-arrival'],
     isPublished: true,
+    isFavorite: false,
     price: 21.8,
     listPrice: 0,
     brand: 'Nike',
@@ -287,7 +287,7 @@ const products: IProductInput[] = [
     countInStock: 0, // Stock handled by variants
     description:
       'Made with chemicals safer for human health and the environment',
-    size: '', 
+    size: '',
     color: '',
     reviews: [],
     variants: [
@@ -317,6 +317,7 @@ const products: IProductInput[] = [
     images: ['/images/p12-1.jpg', '/images/p12-2.jpg', '/images/p12-3.jpg'],
     tags: ['featured'],
     isPublished: true,
+    isFavorite: false,
     price: 23.78,
     listPrice: 0,
     brand: 'Jerzees',
@@ -347,6 +348,7 @@ const products: IProductInput[] = [
     images: ['/images/p13-1.jpg', '/images/p13-2.jpg'],
     tags: ['best-seller'],
     isPublished: true,
+    isFavorite: false,
     price: 13.86,
     listPrice: 16.03,
     avgRating: 4,
@@ -393,6 +395,7 @@ const products: IProductInput[] = [
     images: ['/images/p21-1.jpg', '/images/p21-2.jpg'],
     tags: ['new-arrival'],
     isPublished: true,
+    isFavorite: false,
     price: 95.34,
     listPrice: 0,
     avgRating: 4.71,
@@ -422,6 +425,7 @@ const products: IProductInput[] = [
     images: ['/images/p45-1.jpg', '/images/p45-2.jpg'],
     tags: ['new-arrival', 'featured'],
     isPublished: true,
+    isFavorite: false,
     price: 179.95,
     listPrice: 200,
     avgRating: 3.66,
@@ -466,6 +470,7 @@ const products: IProductInput[] = [
     images: ['/images/p11-1.jpg', '/images/p11-2.jpg'],
     tags: ['new-arrival'],
     isPublished: true,
+    isFavorite: true,
     price: 19.99,
     listPrice: 25.99,
     brand: 'Puma',
@@ -494,6 +499,7 @@ const products: IProductInput[] = [
     images: ['/images/p12-1.jpg', '/images/p12-2.jpg'],
     tags: ['featured'],
     isPublished: true,
+    isFavorite: false,
     price: 24.99,
     listPrice: 30.99,
     brand: 'Under Armour',
@@ -539,6 +545,7 @@ const products: IProductInput[] = [
     images: ['/images/p13-1.jpg', '/images/p13-2.jpg'],
     tags: ['best-seller'],
     isPublished: true,
+    isFavorite: true,
     price: 22.5,
     listPrice: 0,
     brand: 'Reebok',
@@ -567,6 +574,7 @@ const products: IProductInput[] = [
     images: ['/images/p14-1.jpg', '/images/p14-2.jpg'],
     tags: ['todays-deal'],
     isPublished: true,
+    isFavorite: false,
     price: 26.99,
     listPrice: 30.99,
     brand: 'Adidas',
@@ -612,6 +620,7 @@ const products: IProductInput[] = [
     images: ['/images/p15-1.jpg', '/images/p15-2.jpg'],
     tags: ['new-arrival', 'featured'],
     isPublished: true,
+    isFavorite: true,
     price: 30.0,
     listPrice: 35.0,
     brand: 'Nike',
@@ -640,6 +649,7 @@ const products: IProductInput[] = [
     images: ['/images/p16-1.jpg', '/images/p16-2.jpg'],
     tags: ['best-seller', 'todays-deal'],
     isPublished: true,
+    isFavorite: false,
     price: 59.99,
     listPrice: 70.0,
     brand: "Levi's",
@@ -667,6 +677,7 @@ const products: IProductInput[] = [
     images: ['/images/p11-1.jpg', '/images/p11-2.jpg'],
     tags: ['new-arrival'],
     isPublished: true,
+    isFavorite: true,
     price: 18.99,
     listPrice: 20.99,
     brand: 'Hanes',
@@ -695,6 +706,7 @@ const products: IProductInput[] = [
     images: ['/images/p12-1.jpg', '/images/p12-2.jpg'],
     tags: ['featured'],
     isPublished: true,
+    isFavorite: false,
     price: 49.99,
     listPrice: 55.99,
     brand: 'Adidas',
@@ -828,7 +840,6 @@ const reviews = [
   },
 ]
 
-
 const data: Data = {
   users,
   products,
@@ -843,6 +854,7 @@ At [Your Store Name], we prioritize customer satisfaction and innovation. Our te
 
 As we continue to grow, our commitment to quality and service remains unwavering. Thank you for choosing [Your Store Name]—we look forward to being a part of your journey and delivering value every step of the way.`,
       isPublished: true,
+      isFavorite: false,
     },
     {
       title: 'Contact Us',
@@ -863,6 +875,7 @@ For corporate or business-related inquiries, reach out to our headquarters:
 We look forward to assisting you! Your satisfaction is our priority.
 `,
       isPublished: true,
+      isFavorite: false,
     },
     {
       title: 'Help',
@@ -878,6 +891,7 @@ We offer a variety of shipping options to suit your needs, including standard an
 **Account and Support**
 Managing your account is easy. Log in to update your personal information, payment methods, and saved addresses. If you encounter any issues or need further assistance, our customer support team is available via email, live chat, or phone. Visit our Contact Us page for support hours and contact details.`,
       isPublished: true,
+      isFavorite: false,
     },
     {
       title: 'Privacy Policy',
@@ -888,6 +902,7 @@ We collect data such as your name, email address, and payment details to provide
 
 Your data is safeguarded through robust security measures to prevent unauthorized access. However, you have the right to access, correct, or delete your personal information at any time. For inquiries or concerns regarding your privacy, please contact our support team.`,
       isPublished: true,
+      isFavorite: false,
     },
     {
       title: 'Conditions of Use',
@@ -897,6 +912,7 @@ Your data is safeguarded through robust security measures to prevent unauthorize
 We strive to ensure all product descriptions, pricing, and availability information on our website are accurate. However, errors may occur, and we reserve the right to correct them without prior notice. All purchases are subject to our return and refund policy. By using our site, you acknowledge that your personal information will be processed according to our privacy policy, ensuring your data is handled securely and responsibly. Please review these terms carefully before proceeding with any transactions.
 `,
       isPublished: true,
+      isFavorite: false,
     },
     {
       title: 'Customer Service',
@@ -910,48 +926,56 @@ If you have questions or concerns, please reach out to us through our multiple c
 
 We also provide helpful resources such as order tracking, product guides, and FAQs to assist you with common inquiries. Your satisfaction is our priority, and we’re here to resolve any issues quickly and efficiently. Thank you for choosing us!`,
       isPublished: true,
+      isFavorite: false,
     },
     {
       title: 'Returns Policy',
       slug: 'returns-policy',
       content: 'Returns Policy Content',
       isPublished: true,
+      isFavorite: false,
     },
     {
       title: 'Careers',
       slug: 'careers',
       content: 'careers Content',
       isPublished: true,
+      isFavorite: false,
     },
     {
       title: 'Blog',
       slug: 'blog',
       content: 'Blog Content',
       isPublished: true,
+      isFavorite: false,
     },
     {
       title: 'Sell Products',
       slug: 'sell',
       content: `Sell Products Content`,
       isPublished: true,
+      isFavorite: false,
     },
     {
       title: 'Become Affiliate',
       slug: 'become-affiliate',
       content: 'Become Affiliate Content',
       isPublished: true,
+      isFavorite: false,
     },
     {
       title: 'Advertise Your Products',
       slug: 'advertise',
       content: 'Advertise Your Products',
       isPublished: true,
+      isFavorite: false,
     },
     {
       title: 'Shipping Rates & Policies',
       slug: 'shipping',
       content: 'Shipping Rates & Policies',
       isPublished: true,
+      isFavorite: false,
     },
   ],
 
@@ -1023,11 +1047,10 @@ We also provide helpful resources such as order tracking, product guides, and FA
       },
       site: {
         name: 'HBB',
-        description:
-          'HBB Eco-friendly jewelry and nails..',
+        description: 'HBB Eco-friendly jewelry and nails..',
         keywords: 'Next Ecommerce, Next.js, Tailwind CSS, MongoDB',
         url: 'https://next-mongo-ecommerce-final.vercel.app',
-        logo: '/icons/logo.svg',
+        logo: '/icons/Hbb.svg',
         slogan: 'Spend less, enjoy more.',
         author: 'Next Ecommerce',
         copyright: '2000-2024, Next-Ecommerce.com, Inc. or its affiliates',
@@ -1101,7 +1124,5 @@ We also provide helpful resources such as order tracking, product guides, and FA
     },
   ],
 }
-
-
 
 export default data

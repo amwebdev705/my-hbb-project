@@ -45,6 +45,7 @@ const productDefaultValues: IProductInput =
         avgRating: 0,
         numSales: 0,
         isPublished: false,
+        isFavorite: false,
         tags: [],
         size: '',
         color: '',
@@ -67,6 +68,7 @@ const productDefaultValues: IProductInput =
         avgRating: 0,
         numSales: 0,
         isPublished: false,
+        isFavorite: false,
         tags: [],
         size: '',
         color: '',
@@ -176,6 +178,23 @@ const ProductForm = ({
               </FormItem>
             )}
           />
+           <div>
+          <FormField
+            control={form.control}
+            name='isFavorite'
+            render={({ field }) => (
+              <FormItem className='space-x-2 items-center'>
+                <FormControl>
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+                <FormLabel>Is Favorite?</FormLabel>
+              </FormItem>
+            )}
+          />
+        </div>
         </div>
         <div className='flex flex-col gap-5 md:flex-row'>
           <FormField

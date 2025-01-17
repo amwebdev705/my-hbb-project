@@ -16,3 +16,4 @@ export default function AddToBrowsingHistory({
   }, [])
   return null
 }
+

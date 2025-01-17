@@ -138,6 +138,7 @@ const ProductList = () => {
                   <TableCell>{product.countInStock}</TableCell>
                   <TableCell>{product.avgRating}</TableCell>
                   <TableCell>{product.isPublished ? 'Yes' : 'No'}</TableCell>
+                  <TableCell>{product.isFavorite ? 'Yes' : 'No'}</TableCell>
                   <TableCell>
                     {formatDateTime(product.updatedAt).dateTime}
                   </TableCell>

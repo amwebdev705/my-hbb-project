@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
+import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
 
-import { auth } from '@/auth'
 import DeleteDialog from '@/components/shared/delete-dialog'
 import Pagination from '@/components/shared/pagination'
 import { Button } from '@/components/ui/button'
@@ -21,20 +21,39 @@ import ProductPrice from '@/components/shared/product/product-price'
 export const metadata: Metadata = {
   title: 'Admin Orders',
 }
-export default async function OrdersPage(props: {
-  searchParams: Promise<{ page: string }>
-}) {
-  const searchParams = await props.searchParams
 
-  const { page = '1' } = searchParams
+interface OrdersPageProps {
+  searchParams: Promise<Record<string, string | undefined>> // Allow undefined properties
+}
 
-  const session = await auth()
-  if (session?.user.role !== 'Admin')
+export default async function OrdersPage({ searchParams }: OrdersPageProps) {
+
+  // Fetch the search parameters
+  const searchParamsObj = await searchParams;
+  
+  // Fetch the session using KindeAuth
+  const { getUser, getPermission } = getKindeServerSession()
+
+  const user = await getUser()
+  if (!user) {
+    throw new Error('Authentication required')
+  }
+
+  const adminPermission = await getPermission('admin-access')
+  const isAdmin = adminPermission?.isGranted
+
+  if (!isAdmin) {
     throw new Error('Admin permission required')
+  }
 
+  // Get the current page from search parameters
+  const page = searchParamsObj.page || '1'
+
+  // Fetch orders for the admin view
   const orders = await getAllOrders({
     page: Number(page),
   })
+
   return (
     <div className='space-y-2'>
       <h1 className='h1-bold'>Orders</h1>
@@ -62,7 +81,6 @@ export default async function OrdersPage(props: {
                   {order.user ? order.user.name : 'Deleted User'}
                 </TableCell>
                 <TableCell>
-                  {' '}
                   <ProductPrice price={order.totalPrice} plain />
                 </TableCell>
                 <TableCell>
@@ -86,7 +104,7 @@ export default async function OrdersPage(props: {
           </TableBody>
         </Table>
         {orders.totalPages > 1 && (
-          <Pagination page={page} totalPages={orders.totalPages!} />
+          <Pagination page={Number(page)} totalPages={orders.totalPages!} />
         )}
       </div>
     </div>

@@ -33,7 +33,6 @@ export async function GET() {
       await dbUser.save()
     } else {
       // Optionally update user details if necessary
-      dbUser.lastLogin = new Date()
       dbUser.firstName = user.given_name || dbUser.firstName
       dbUser.lastName = user.family_name || dbUser.lastName
       dbUser.profileImage = user.picture || dbUser.profileImage

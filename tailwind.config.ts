@@ -10,6 +10,14 @@ const config: Config = withUt({
   ],
   theme: {
     extend: {
+      translate: {
+        0: '20px',
+      },
+
+      perspective: '1000px',
+      transformStyle: 'preserve-3d',
+      backfaceVisibility: 'hidden',
+
       colors: {
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
@@ -59,8 +67,35 @@ const config: Config = withUt({
       },
     },
   },
+
   // eslint-disable-next-line @typescript-eslint/no-require-imports
-  plugins: [require('tailwindcss-animate')],
-}) satisfies Config
+  plugins: [
+    function ({
+      addUtilities,
+    }: {
+      addUtilities: (utilities: {
+        [key: string]: { [key: string]: string }
+      }) => void
+    }) {
+      addUtilities({
+        '.perspective': {
+          perspective: '1000px',
+        },
+        '.transform-style-preserve-3d': {
+          transformStyle: 'preserve-3d',
+        },
+        '.backface-hidden': {
+          backfaceVisibility: 'hidden',
+        },
+        '.rotate-y-180': {
+          transform: 'rotateY(180deg)',
+        },
+        '.rotate-y-0': {
+          transform: 'rotateY(0deg)',
+        },
+      })
+    },
+  ],
+})
 
 export default config

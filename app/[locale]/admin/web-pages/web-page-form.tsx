@@ -187,6 +187,23 @@ const WebPageForm = ({
           />
         </div>
         <div>
+          <FormField
+            control={form.control}
+            name='isFavorite'
+            render={({ field }) => (
+              <FormItem className='space-x-2 items-center'>
+                <FormControl>
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+                <FormLabel>Is Published?</FormLabel>
+              </FormItem>
+            )}
+          />
+        </div>
+        <div>
           <Button
             type='submit'
             size='lg'

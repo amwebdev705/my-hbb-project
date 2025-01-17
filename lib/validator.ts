@@ -53,6 +53,7 @@ export const ProductInputSchema = z.object({
   brand: z.string().min(1, 'Brand is required'),
   description: z.string().min(1, 'Description is required'),
   isPublished: z.boolean(),
+  isFavorite: z.boolean(),
   price: z.number().min(0, 'Price must be greater than or equal to 0'),
   listPrice: z
     .number()
@@ -231,7 +232,7 @@ export const UserSignUpSchema = UserSignInSchema.extend({
 })
 
 export const UserNameSchema = z.object({
-  name: UserName,
+  name: z.string().min(1, 'Name is required').max(100, 'Name is too long'),
 })
 
 // WEBPAGE
@@ -240,6 +241,7 @@ export const WebPageInputSchema = z.object({
   slug: z.string().min(3, 'Slug must be at least 3 characters'),
   content: z.string().min(1, 'Content is required'),
   isPublished: z.boolean(),
+  isFavorite: z.boolean(),
 })
 
 export const WebPageUpdateSchema = WebPageInputSchema.extend({

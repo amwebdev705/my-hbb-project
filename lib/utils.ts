@@ -184,9 +184,6 @@ export function formatId(id: string | null | undefined): string {
 }
 
 
-
-console.log('formatId', formatId)
-
 export const getFilterUrl = ({
   params,
   category,

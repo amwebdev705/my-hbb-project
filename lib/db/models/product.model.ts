@@ -1,39 +1,39 @@
-import { Document, Model, model, models, Schema } from 'mongoose';
-import { IProductInput } from '@/types';
+import { Document, Model, model, models, Schema } from 'mongoose'
+import { IProductInput } from '@/types'
 
 export interface IProductVariant {
-  sku: string;
-  images: string[];
-  price: number;
-  countInStock: number;
-  color: string;
-  size: string;
+  sku: string
+  images: string[]
+  price: number
+  countInStock: number
+  color: string
+  size: string
 }
 
 export interface IProduct extends Document, IProductInput {
-  _id: string;
-  createdAt: Date;
-  updatedAt: Date;
-  variants?: IProductVariant[]; 
+  _id: string
+  createdAt: Date
+  updatedAt: Date
+  variants?: IProductVariant[]
 }
 
 const variantSchema = new Schema<IProductVariant>(
   {
     sku: {
       type: String,
-      required: false, 
+      required: false,
     },
     images: {
       type: [String],
-      required: false, 
+      required: false,
     },
     price: {
       type: Number,
-      required: true, 
+      required: true,
     },
     countInStock: {
       type: Number,
-      required: true, 
+      required: true,
     },
     color: {
       type: String,
@@ -41,11 +41,11 @@ const variantSchema = new Schema<IProductVariant>(
     },
     size: {
       type: String,
-      required: false, 
+      required: false,
     },
   },
   { _id: false } // Prevent additional `_id` field for each variant
-);
+)
 
 const productSchema = new Schema<IProduct>(
   {
@@ -131,6 +131,11 @@ const productSchema = new Schema<IProduct>(
       required: true,
       default: false,
     },
+    isFavorite: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
     reviews: [
       {
         type: Schema.Types.ObjectId,
@@ -138,15 +143,15 @@ const productSchema = new Schema<IProduct>(
         default: [],
       },
     ],
-    variants: [variantSchema], 
+    variants: [variantSchema],
   },
   {
-    timestamps: true, 
+    timestamps: true,
   }
-);
+)
 
 const Product =
   (models.Product as Model<IProduct>) ||
-  model<IProduct>('Product', productSchema);
+  model<IProduct>('Product', productSchema)
 
-export default Product;
+export default Product

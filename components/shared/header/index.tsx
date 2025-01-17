@@ -3,12 +3,12 @@ import Image from 'next/image'
 // import { getAllCategories } from '@/lib/actions/product.actions'
 import Menu from './menu'
 import Search from './search'
-import data from '@/lib/data'
+// import data from '@/lib/data'
 // import Sidebar from './sidebar'
 // import { getSetting } from '@/lib/actions/setting.actions'
-import { getTranslations } from 'next-intl/server'
+// import { getTranslations } from 'next-intl/server'
 import Link from 'next/link'
-
+import Category from '../category'
 
 // import Navbar4 from '@/components/comps'
 // import ProductsNav from '@/app/[locale]/productsNav'
@@ -16,7 +16,7 @@ import Link from 'next/link'
 export default async function Header() {
   // const categories = await getAllCategories()
   // const { site } = await getSetting()
-  const t = await getTranslations()
+  // const t = await getTranslations()
   return (
     <header className='bg-[#d1bd7d]  text-black'>
       <div className='px-2'>
@@ -24,7 +24,6 @@ export default async function Header() {
           <div className='flex items-center'>
             <div>
               <Link href='/about'>About Us |</Link>
-             
             </div>
             <div>Shop | </div>
             {/* <Link
@@ -66,14 +65,16 @@ export default async function Header() {
           <Search />
         </div>
       </div>
-      <div className='flex items-center px-3 mb-[1px]  bg-gray-800'>
-        {/* <Sidebar categories={categories} /> */}
-        <div className='flex items-center flex-wrap gap-3 overflow-hidden   max-h-[42px]'>
-          {/* <Navbar4/> */}
-          {/* <Prods/> */}
-     
+      <div className='w-full'> 
+       <Category /> 
+      </div>
 
-          {data.headerMenus.map((menu) => (
+
+      {/* <div className='flex items-center px-3 mb-[1px]  bg-gray-800 text-white'> */}
+      {/* <Sidebar categories={categories} /> */}
+      <div className='flex items-center flex-wrap gap-3 overflow-hidden   max-h-[42px]'>
+        
+        {/* {data.headerMenus.map((menu) => (
             <Link
               href={menu.href}
               key={menu.href}
@@ -81,9 +82,9 @@ export default async function Header() {
             >
               {t('Header.' + menu.name)}
             </Link>
-          ))}
-        </div>
+          ))} */}
       </div>
+      {/* </div> */}
     </header>
   )
 }

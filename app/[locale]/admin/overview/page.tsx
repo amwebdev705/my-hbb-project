@@ -1,27 +1,23 @@
 import { Metadata } from 'next'
-
-import OverviewReport from './overview-report'
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
 import { redirect } from 'next/navigation'
+
+import OverviewReport from './overview-report'
 
 export const metadata: Metadata = {
   title: 'Admin Dashboard',
 }
+
 const DashboardPage = async () => {
   const { isAuthenticated, getPermission } = getKindeServerSession()
-  const isLoggedIn = await isAuthenticated()
-  if (!isLoggedIn) {
-    // redirect('/api/auth/login')
-    redirect('/cart')
-  }
-  const requiredPermission = await getPermission('create-product')
-  if (!requiredPermission?.isGranted) {
-    redirect('/')
+
+  if (!(await isAuthenticated())) {
+    return redirect('/api/auth/login')
   }
 
-  // const session = await auth()
-  // if (session?.user.role !== 'Admin')
-  //   throw new Error('Admin permission required')
+  if (!(await getPermission('admin-access'))?.isGranted) {
+    return redirect('/')
+  }
 
   return <OverviewReport />
 }

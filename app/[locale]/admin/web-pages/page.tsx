@@ -47,6 +47,7 @@ export default async function WebPageAdminPage() {
                 <TableCell>{webPage.title}</TableCell>
                 <TableCell>{webPage.slug}</TableCell>
                 <TableCell>{webPage.isPublished ? 'Yes' : 'No'}</TableCell>
+                <TableCell>{webPage.isFavorite ? 'Yes' : 'No'}</TableCell>
                 <TableCell className='flex gap-1'>
                   <Button asChild variant='outline' size='sm'>
                     <Link href={`/admin/web-pages/${webPage._id}`}>Edit</Link>
