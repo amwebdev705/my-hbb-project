@@ -2,7 +2,7 @@ import * as React from 'react'
 import Link from 'next/link'
 import { X, ChevronRight, UserCircle, MenuIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-// import { SignOut } from '@/lib/actions/user.actions'
+import { SignOut } from '@/lib/actions/user.actions'
 import {
   Drawer,
   DrawerClose,
@@ -12,7 +12,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from '@/components/ui/drawer'
-import { getKindeServerSession, LogoutLink } from '@kinde-oss/kinde-auth-nextjs/server'
+import { auth } from '@/auth'
 import { getLocale, getTranslations } from 'next-intl/server'
 import { getDirection } from '@/i18n-config'
 
@@ -21,9 +21,7 @@ export default async function Sidebar({
 }: {
   categories: string[]
 }) {
-  const { isAuthenticated, getUser } = getKindeServerSession()
-  const isUserAuthenticated = await isAuthenticated()
-  const user = isUserAuthenticated ? await getUser() : null
+  const session = await auth()
 
   const locale = await getLocale()
 
@@ -41,11 +39,11 @@ export default async function Sidebar({
             <DrawerHeader>
               <DrawerTitle className='flex items-center'>
                 <UserCircle className='h-6 w-6 mr-2' />
-                {user ? (
+                {session ? (
                   <DrawerClose asChild>
                     <Link href='/account'>
                       <span className='text-lg font-semibold'>
-                        {t('Header.Hello')}, {user.given_name}
+                        {t('Header.Hello')}, {session.user.name}
                       </span>
                     </Link>
                   </DrawerClose>
@@ -108,16 +106,15 @@ export default async function Sidebar({
                 {t('Header.Customer Service')}
               </Link>
             </DrawerClose>
-            {user ? (
-              // <form action={SignOut} className='w-full'>
-              //   <Button
-              //     className='w-full justify-start item-button text-base'
-              //     variant='ghost'
-              //   >
-              //     {t('Header.Sign out')}
-              //   </Button>
-              // </form>
-              <Button><LogoutLink>{t('Header.Sign out')}</LogoutLink></Button>
+            {session ? (
+              <form action={SignOut} className='w-full'>
+                <Button
+                  className='w-full justify-start item-button text-base'
+                  variant='ghost'
+                >
+                  {t('Header.Sign out')}
+                </Button>
+              </form>
             ) : (
               <Link href='/sign-in' className='item-button'>
                 {t('Header.Sign in')}

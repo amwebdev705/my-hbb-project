@@ -1,6 +1,6 @@
 import { Metadata } from 'next'
 import CheckoutForm from './checkout-form'
-import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
+import { auth } from '@/auth'
 import { redirect } from 'next/navigation'
 
 export const metadata: Metadata = {
@@ -8,10 +8,8 @@ export const metadata: Metadata = {
 }
 
 export default async function CheckoutPage() {
-  const { isAuthenticated, getUser } = getKindeServerSession()
-  const isUserAuthenticated = await isAuthenticated()
-  const user = isUserAuthenticated ? await getUser() : null
-  if (!user) {
+  const session = await auth()
+  if (!session?.user) {
     redirect('/sign-in?callbackUrl=/checkout')
   }
   return <CheckoutForm />

@@ -1,26 +1,25 @@
-// import { IUserInput } from '@/types'
+import { IUserInput } from '@/types'
 import { Document, Model, model, models, Schema } from 'mongoose'
 
-export interface IUser extends Document {
-  _id: string; // KindeAuth unique identifier
-  email: string
-  firstName?: string // Maps to `given_name`
-  lastName?: string // Maps to `family_name`
-  profileImage?: string // Maps to `picture`
-  role?: string
+export interface IUser extends Document, IUserInput {
+  _id: string
+  createdAt: Date
+  updatedAt: Date
+  lastLogin?: Date;
 }
 
-// Mongoose Schema for User
 const userSchema = new Schema<IUser>(
   {
-    _id: { type: String, required: true }, // KindeAuth ID as the primary key
     email: { type: String, required: true, unique: true },
-    firstName: { type: String, default: '' },
-    lastName: { type: String, default: '' },
-    profileImage: { type: String, default: '' },
+    name: { type: String, required: true, default: 'NONAME' },
+    role: { type: String, required: true, default: 'User' },
+    password: { type: String },
+    image: { type: String },
+    emailVerified: { type: Boolean, default: false },
+    lastLogin: { type: Date }, // Optional last login timestamp
   },
   {
-    timestamps: true, // Automatically manages `createdAt` and `updatedAt`
+    timestamps: true,
   }
 )
 

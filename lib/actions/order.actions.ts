@@ -3,6 +3,7 @@
 import { Cart, IOrderList, OrderItem, ShippingAddress } from '@/types'
 import { formatError, round2 } from '../utils'
 import { connectToDatabase } from '../db'
+import { auth } from '@/auth'
 import { OrderInputSchema } from '../validator'
 import Order, { IOrder } from '../db/models/order.model'
 import { revalidatePath } from 'next/cache'
@@ -13,48 +14,27 @@ import Product from '../db/models/product.model'
 import User from '../db/models/user.model'
 import mongoose from 'mongoose'
 import { getSetting } from './setting.actions'
-import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
 
 // CREATE
 export const createOrder = async (clientSideCart: Cart) => {
   try {
-    // Connect to the database
     await connectToDatabase()
-
-    // Get the authenticated session
-    const session = getKindeServerSession()
-    if (!session) {
-      throw new Error('User not authenticated')
-    }
-
-    // Retrieve the user ID from Kinde claims
-    const userId = session.getClaim('sub') // 'sub' typically represents the user's unique ID
-    if (!userId) {
-      throw new Error('Unable to retrieve user ID from session')
-    }
-
-    // Fetch the user from MongoDB
-    const user = await User.findOne({ authId: userId }) // Replace 'authId' with the field that maps to Kinde's user ID
-    if (!user) {
-      throw new Error('User not found in the database')
-    }
-
-   
-
-    // Recalculate price and delivery date on the server
-    const createdOrder = await createOrderFromCart(clientSideCart, user._id as string)
+    const session = await auth()
+    if (!session) throw new Error('User not authenticated')
+    // recalculate price and delivery date on the server
+    const createdOrder = await createOrderFromCart(
+      clientSideCart,
+      session.user.id!
+    )
     return {
       success: true,
       message: 'Order placed successfully',
       data: { orderId: createdOrder._id.toString() },
     }
   } catch (error) {
-    console.error('Error creating order:', error)
     return { success: false, message: formatError(error) }
   }
 }
-
-// CREATE ORDER FROM CART
 export const createOrderFromCart = async (
   clientSideCart: Cart,
   userId: string
@@ -82,7 +62,6 @@ export const createOrderFromCart = async (
   return await Order.create(order)
 }
 
-// UPDATE ORDER TO PAID
 export async function updateOrderToPaid(orderId: string) {
   try {
     await connectToDatabase()
@@ -103,8 +82,6 @@ export async function updateOrderToPaid(orderId: string) {
     return { success: false, message: formatError(err) }
   }
 }
-
-// UPDATE PRODUCT STOCK
 const updateProductStock = async (orderId: string) => {
   const session = await mongoose.connection.startSession()
 
@@ -139,8 +116,6 @@ const updateProductStock = async (orderId: string) => {
     throw error
   }
 }
-
-// DELIVER ORDER
 export async function deliverOrder(orderId: string) {
   try {
     await connectToDatabase()
@@ -177,6 +152,7 @@ export async function deleteOrder(id: string) {
 }
 
 // GET ALL ORDERS
+
 export async function getAllOrders({
   limit,
   page,
@@ -201,9 +177,6 @@ export async function getAllOrders({
     totalPages: Math.ceil(ordersCount / limit),
   }
 }
-
-// GET MY ORDERS
-
 export async function getMyOrders({
   limit,
   page,
@@ -214,43 +187,32 @@ export async function getMyOrders({
   const {
     common: { pageSize },
   } = await getSetting()
-
   limit = limit || pageSize
-
   await connectToDatabase()
-
-  const { getUser } = getKindeServerSession()
-  const user = await getUser()
-
-  if (!user) {
-    throw new Error('User not authenticated')
+  const session = await auth()
+  if (!session) {
+    throw new Error('User is not authenticated')
   }
-
   const skipAmount = (Number(page) - 1) * limit
-
   const orders = await Order.find({
-    user: user.id, // Use the `id` field from the fetched user object
+    user: session?.user?.id,
   })
     .sort({ createdAt: 'desc' })
     .skip(skipAmount)
     .limit(limit)
-
-  const ordersCount = await Order.countDocuments({ user: user.id })
+  const ordersCount = await Order.countDocuments({ user: session?.user?.id })
 
   return {
     data: JSON.parse(JSON.stringify(orders)),
     totalPages: Math.ceil(ordersCount / limit),
   }
 }
-
-// GET ORDER BY ID
 export async function getOrderById(orderId: string): Promise<IOrder> {
   await connectToDatabase()
   const order = await Order.findById(orderId)
   return JSON.parse(JSON.stringify(order))
 }
 
-// CREATE PAYPAL ORDER
 export async function createPayPalOrder(orderId: string) {
   await connectToDatabase()
   try {
@@ -277,7 +239,6 @@ export async function createPayPalOrder(orderId: string) {
   }
 }
 
-// APPROVE PAYPAL ORDER
 export async function approvePayPalOrder(
   orderId: string,
   data: { orderID: string }
@@ -315,7 +276,6 @@ export async function approvePayPalOrder(
   }
 }
 
-// CALCULATE DELIVERY DATE AND PRICE
 export const calcDeliveryDateAndPrice = async ({
   items,
   shippingAddress,
@@ -459,7 +419,6 @@ export async function getOrderSummary(date: DateRange) {
   }
 }
 
-// GET SALES CHART DATA
 async function getSalesChartData(date: DateRange) {
   const result = await Order.aggregate([
     {
@@ -501,7 +460,6 @@ async function getSalesChartData(date: DateRange) {
   return result
 }
 
-// GET TOP SALES PRODUCTS
 async function getTopSalesProducts(date: DateRange) {
   const result = await Order.aggregate([
     {
@@ -553,7 +511,6 @@ async function getTopSalesProducts(date: DateRange) {
   return result
 }
 
-// GET TOP SALES CATEGORIES
 async function getTopSalesCategories(date: DateRange, limit = 5) {
   const result = await Order.aggregate([
     {

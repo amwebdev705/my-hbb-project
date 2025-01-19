@@ -1,15 +1,40 @@
 'use server'
 
+import bcrypt from 'bcryptjs'
+import { auth, signIn, signOut } from '@/auth'
+import { IUserName, IUserSignIn, IUserSignUp } from '@/types'
+import { UserSignUpSchema, UserUpdateSchema } from '../validator'
 import { connectToDatabase } from '../db'
 import User, { IUser } from '../db/models/user.model'
 import { formatError } from '../utils'
-// import { redirect } from 'next/navigation'
+import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
-
+import { z } from 'zod'
 import { getSetting } from './setting.actions'
-import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
 
-// DELETE USER
+// CREATE
+export async function registerUser(userSignUp: IUserSignUp) {
+  try {
+    const user = await UserSignUpSchema.parseAsync({
+      name: userSignUp.name,
+      email: userSignUp.email,
+      password: userSignUp.password,
+      confirmPassword: userSignUp.confirmPassword,
+    })
+
+    await connectToDatabase()
+    await User.create({
+      ...user,
+      password: await bcrypt.hash(user.password, 5),
+    })
+    return { success: true, message: 'User created successfully' }
+  } catch (error) {
+    return { success: false, error: formatError(error) }
+  }
+}
+
+// DELETE
+
 export async function deleteUser(id: string) {
   try {
     await connectToDatabase()
@@ -24,83 +49,57 @@ export async function deleteUser(id: string) {
     return { success: false, message: formatError(error) }
   }
 }
+// UPDATE
 
-// UPDATE USER
-export async function updateUser(data: {
-  _id: string
-  firstName: string
-  lastName: string
-  email: string
-}): Promise<{ success: boolean; message: string }> {
-  try {
-    const response = await fetch(`/api/users/${data._id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    })
-
-    if (!response.ok) {
-      const error = await response.json()
-      throw new Error(error.message || 'Failed to update user')
-    }
-
-    return await response.json()
-  } catch (error) {
-    if (error instanceof Error) {
-      console.error('Error updating user:', error.message)
-      return { success: false, message: error.message }
-    }
-
-    console.error('Unexpected error updating user:', error)
-    return { success: false, message: 'An unexpected error occurred' }
-  }
-}
-
-//UPDATE USERNAME
-export async function updateUserName(values: { name: string }) {
+export async function updateUser(user: z.infer<typeof UserUpdateSchema>) {
   try {
     await connectToDatabase()
-
-    const session = getKindeServerSession()
-    if (!session) {
-      throw new Error('User session not found')
-    }
-
-    const userId = session.getClaim('sub') // Extract user ID from session
-    if (!userId) {
-      throw new Error('User ID not found in session')
-    }
-
-    const [firstName, ...lastNameParts] = values.name.split(' ')
-    const lastName = lastNameParts.join(' ') || ''
-
-    const currentUser = await User.findOne({ _id: userId })
-    if (!currentUser) {
-      throw new Error('User not found')
-    }
-
-    currentUser.firstName = firstName || currentUser.firstName
-    currentUser.lastName = lastName || currentUser.lastName
-
-    const updatedUser = await currentUser.save()
-
+    const dbUser = await User.findById(user._id)
+    if (!dbUser) throw new Error('User not found')
+    dbUser.name = user.name
+    dbUser.email = user.email
+    dbUser.role = user.role
+    const updatedUser = await dbUser.save()
+    revalidatePath('/admin/users')
     return {
       success: true,
       message: 'User updated successfully',
       data: JSON.parse(JSON.stringify(updatedUser)),
     }
   } catch (error) {
-    if (error instanceof Error) {
-      console.error('Error updating user name:', error.message)
-      return { success: false, message: error.message }
+    return { success: false, message: formatError(error) }
+  }
+}
+export async function updateUserName(user: IUserName) {
+  try {
+    await connectToDatabase()
+    const session = await auth()
+    const currentUser = await User.findById(session?.user?.id)
+    if (!currentUser) throw new Error('User not found')
+    currentUser.name = user.name
+    const updatedUser = await currentUser.save()
+    return {
+      success: true,
+      message: 'User updated successfully',
+      data: JSON.parse(JSON.stringify(updatedUser)),
     }
-
-    console.error('Unexpected error updating user:', error)
-    return { success: false, message: 'An unexpected error occurred' }
+  } catch (error) {
+    return { success: false, message: formatError(error) }
   }
 }
 
-// GET ALL USERS
+export async function signInWithCredentials(user: IUserSignIn) {
+  return await signIn('credentials', { ...user, redirect: false })
+}
+export const SignInWithGoogle = async () => {
+  await signIn('google')
+}
+export const SignOut = async () => {
+  const redirectTo = await signOut({ redirect: false })
+  redirect(redirectTo.redirect)
+}
+
+// GET
 export async function getAllUsers({
   limit,
   page,
@@ -126,20 +125,9 @@ export async function getAllUsers({
   }
 }
 
-// GET USER BY ID
-export async function getUserById(userId: string): Promise<IUser> {
+export async function getUserById(userId: string) {
   await connectToDatabase()
-
-  // Validate that the userId is a non-empty string
-  if (!userId || typeof userId !== 'string') {
-    throw new Error('Invalid user ID format')
-  }
   const user = await User.findById(userId)
-
-  if (!user) {
-    console.error(`User not found with ID: ${userId}`) // Log the missing user
-    throw new Error('User not found')
-  }
-
+  if (!user) throw new Error('User not found')
   return JSON.parse(JSON.stringify(user)) as IUser
 }

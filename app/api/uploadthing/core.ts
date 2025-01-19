@@ -1,6 +1,6 @@
 import { createUploadthing, type FileRouter } from 'uploadthing/next'
 import { UploadThingError } from 'uploadthing/server'
-import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
+import { auth } from '@/auth'
 
 const f = createUploadthing()
 
@@ -10,32 +10,20 @@ export const ourFileRouter = {
   imageUploader: f({ image: { maxFileSize: '4MB' } })
     // Set permissions and file types for this FileRoute
     .middleware(async () => {
-      // Fetch session and user details using KindeAuth
-      const { isAuthenticated, getUser } = getKindeServerSession()
-      const isUserAuthenticated = await isAuthenticated()
+      // This code runs on your server before upload
+      const session = await auth()
 
-      // If the user is not authenticated, throw an error
-      if (!isUserAuthenticated) {
-        throw new UploadThingError('Unauthorized')
-      }
+      // If you throw, the user will not be able to upload
+      if (!session) throw new UploadThingError('Unauthorized')
 
-      const user = await getUser()
-
-      // Ensure user details are valid
-      if (!user || !user.id) {
-        throw new UploadThingError('Unauthorized')
-      }
-
-      // Return userId as metadata for further processing
-      return { userId: user.id }
+      // Whatever is returned here is accessible in onUploadComplete as `metadata`
+      return { userId: session?.user?.id }
     })
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     .onUploadComplete(async ({ metadata, file }) => {
       // This code RUNS ON YOUR SERVER after upload
-      console.log(`File uploaded by user ${metadata.userId}:`, file)
 
-      // Optional: Handle additional logic like saving file metadata to a database
-
-      // Return metadata to the client
+      // !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback
       return { uploadedBy: metadata.userId }
     }),
 } satisfies FileRouter

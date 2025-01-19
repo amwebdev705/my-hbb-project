@@ -4,7 +4,7 @@ import mongoose from 'mongoose'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 
-import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
+import { auth } from '@/auth'
 
 import { connectToDatabase } from '../db'
 import Product from '../db/models/product.model'
@@ -22,16 +22,14 @@ export async function createUpdateReview({
   path: string
 }) {
   try {
-    const { isAuthenticated, getUser } = getKindeServerSession()
-    const isUserAuthenticated = await isAuthenticated()
-    const user = isUserAuthenticated ? await getUser() : null
-    if (!user) {
+    const session = await auth()
+    if (!session) {
       throw new Error('User is not authenticated')
     }
 
     const review = ReviewInputSchema.parse({
       ...data,
-      user: user?.id,
+      user: session?.user?.id,
     })
 
     await connectToDatabase()
@@ -138,15 +136,13 @@ export const getReviewByProductId = async ({
   productId: string
 }) => {
   await connectToDatabase()
-  const { isAuthenticated, getUser } = getKindeServerSession()
-  const isUserAuthenticated = await isAuthenticated()
-  const user = isUserAuthenticated ? await getUser() : null
-  if (!user) {
+  const session = await auth()
+  if (!session) {
     throw new Error('User is not authenticated')
   }
   const review = await Review.findOne({
     product: productId,
-    user: user?.id,
+    user: session?.user?.id,
   })
   return review ? (JSON.parse(JSON.stringify(review)) as IReview) : null
 }

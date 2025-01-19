@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
-import { redirect } from 'next/navigation'
-import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
+
+import { auth } from '@/auth'
 import DeleteDialog from '@/components/shared/delete-dialog'
 import Pagination from '@/components/shared/pagination'
 import { Button } from '@/components/ui/button'
@@ -22,30 +22,16 @@ export const metadata: Metadata = {
 }
 
 export default async function AdminUser(props: {
-  searchParams: Promise<{ page?: string }> // Awaitable type
+  searchParams: Promise<{ page: string }>
 }) {
-  // Await the `searchParams`
-  const resolvedSearchParams = await props.searchParams
-
-  // Fetch authentication details using KindeAuth
-  const { getUser, getPermission } = getKindeServerSession()
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const user = await getUser()
-  const adminPermission = await getPermission('admin-access')
-  const isAdmin = adminPermission?.isGranted
-
-  // If the user does not have admin permissions, redirect to the homepage
-  if (!isAdmin) {
-    redirect('/')
-    return null // Prevent further rendering
-  }
-
-  // Parse page number from resolved search params
-  const page = Number(resolvedSearchParams.page) || 1
-
-  // Fetch users for the admin dashboard
-  const users = await getAllUsers({ page })
-
+  const searchParams = await props.searchParams
+  const session = await auth()
+  if (session?.user.role !== 'Admin')
+    throw new Error('Admin permission required')
+  const page = Number(searchParams.page) || 1
+  const users = await getAllUsers({
+    page,
+  })
   return (
     <div className='space-y-2'>
       <h1 className='h1-bold'>Users</h1>
@@ -64,11 +50,7 @@ export default async function AdminUser(props: {
             {users?.data.map((user: IUser) => (
               <TableRow key={user._id}>
                 <TableCell>{formatId(user._id)}</TableCell>
-                <TableCell>
-                  {user.firstName && user.lastName
-                    ? `${user.firstName} ${user.lastName}`
-                    : ''}
-                </TableCell>
+                <TableCell>{user.name}</TableCell>
                 <TableCell>{user.email}</TableCell>
                 <TableCell>{user.role}</TableCell>
                 <TableCell className='flex gap-1'>

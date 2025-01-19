@@ -8,21 +8,14 @@ import { ProductInputSchema, ProductUpdateSchema } from '../validator'
 import { IProductInput } from '@/types'
 import { z } from 'zod'
 import { getSetting } from './setting.actions'
-import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
-import { redirect } from 'next/navigation'
 
 // CREATE
 export async function createProduct(data: IProductInput) {
-  const { isAuthenticated } = getKindeServerSession()
-  const isLoggedIn = await isAuthenticated()
-  if (!isLoggedIn) {
-    redirect('/api/auth/login')
-  }
   try {
     const product = ProductInputSchema.parse(data)
     await connectToDatabase()
     await Product.create(product)
-    revalidatePath('/admin/products/create')
+    revalidatePath('/admin/products')
     return {
       success: true,
       message: 'Product created successfully',
@@ -47,7 +40,6 @@ export async function updateProduct(data: z.infer<typeof ProductUpdateSchema>) {
     return { success: false, message: formatError(error) }
   }
 }
-
 // DELETE
 export async function deleteProduct(id: string) {
   try {
@@ -133,25 +125,8 @@ export async function getAllCategories() {
   const categories = await Product.find({ isPublished: true }).distinct(
     'category'
   )
- 
   return categories
 }
-export async function getIsFavorite() {
-  await connectToDatabase();
-
-  const favorites = await Product.find({ isFavorite: true, isPublished: true })
-    .sort({ createdAt: -1 })
-    .limit(10)
-    .lean();
-
-  return favorites.map((favorite) => ({
-    _id: favorite._id.toString(), // Ensure `_id` is a string
-    name: favorite.name,
-    price: favorite.price,
-    image: favorite.images?.[0] || '/placeholder.png', // Add a fallback image
-  }));
-}
-
 export async function getProductsForCard({
   tag,
   limit = 4,
@@ -347,4 +322,20 @@ export async function getAllTags() {
           .join(' ')
       ) as string[]) || []
   )
+}
+
+export async function getIsFavorite() {
+  await connectToDatabase()
+
+  const favorites = await Product.find({ isFavorite: true, isPublished: true })
+    .sort({ createdAt: -1 })
+    .limit(10)
+    .lean()
+
+  return favorites.map((favorite) => ({
+    _id: favorite._id.toString(), // Ensure `_id` is a string
+    name: favorite.name,
+    price: favorite.price,
+    image: favorite.images?.[0] || '/placeholder.png', // Add a fallback image
+  }))
 }
