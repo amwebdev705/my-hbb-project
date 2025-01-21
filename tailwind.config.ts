@@ -1,6 +1,7 @@
-import type { Config } from 'tailwindcss'
-import { withUt } from 'uploadthing/tw'
-import tailwindcssAnimate from 'tailwindcss-animate' // Use import instead of require
+import type { Config } from 'tailwindcss';
+import { withUt } from 'uploadthing/tw';
+import tailwindcssAnimate from 'tailwindcss-animate'; // Correct import
+import typography from '@tailwindcss/typography'; // Import typography plugin
 
 const config: Config = withUt({
   darkMode: ['class'],
@@ -71,7 +72,7 @@ const config: Config = withUt({
       },
     },
   },
-  plugins: [tailwindcssAnimate], // Use imported module here
-}) satisfies Config
+  plugins: [tailwindcssAnimate, typography], // Corrected plugin inclusion
+}) satisfies Config;
 
-export default config
+export default config;

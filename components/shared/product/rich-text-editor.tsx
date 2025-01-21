@@ -1,51 +1,44 @@
-'use client';
+'use client'
 
-import dynamic from 'next/dynamic';
-import 'react-quill-new/dist/quill.snow.css'; // Import Quill styles
-import { useEffect, useRef } from 'react';
+import dynamic from 'next/dynamic'
+import 'react-quill-new/dist/quill.snow.css'
+import { useEffect, useRef } from 'react'
 
-const ReactQuill = dynamic(() => import('react-quill-new'), { ssr: false });
+const ReactQuill = dynamic(() => import('react-quill-new'), { ssr: false })
 
 const RichTextEditor = ({
   value,
   onChange,
 }: {
-  value: string;
-  onChange: (value: string) => void;
+  value: string
+  onChange: (value: string) => void
 }) => {
-  const editorRef = useRef<HTMLDivElement>(null);
+  const editorRef = useRef<HTMLDivElement>(null)
 
-  // Auto-grow functionality
   useEffect(() => {
-    const adjustHeight = () => {
-      const editor = editorRef.current?.querySelector('.ql-editor') as HTMLElement;
-      if (editor) {
-        editor.style.height = 'auto'; // Reset height
-        editor.style.height = `${editor.scrollHeight}px`; // Set to content height
-      }
-    };
-
-    adjustHeight(); // Initial adjustment
-    const editor = editorRef.current?.querySelector('.ql-editor') as HTMLElement;
+    const editor = editorRef.current?.querySelector('.ql-editor') as HTMLElement
     if (editor) {
-      editor.addEventListener('input', adjustHeight);
-    }
-
-    return () => {
-      if (editor) {
-        editor.removeEventListener('input', adjustHeight);
+      const adjustHeight = () => {
+        editor.style.height = 'auto'
+        editor.style.height = `${editor.scrollHeight}px`
       }
-    };
-  }, [value]);
+      adjustHeight() // Initial adjustment
+      editor.addEventListener('input', adjustHeight)
+      return () => editor.removeEventListener('input', adjustHeight)
+    }
+  }, [value])
 
   return (
-    <div ref={editorRef} className="border rounded-md shadow-sm">
+    <div ref={editorRef} className='border rounded-md shadow-sm'>
       <ReactQuill
-        theme="snow"
+        theme='snow'
         value={value || ''}
-        onChange={onChange}
-        placeholder="Write your description here..."
-        className="ql-container"
+        onChange={(content) => {
+          console.log('Editor Output:', content) // Should log valid HTML
+          onChange(content)
+        }}
+        placeholder='Write your description here...'
+        className='ql-container'
         modules={{
           toolbar: [
             ['bold', 'italic', 'underline'], // Text formatting
@@ -55,7 +48,7 @@ const RichTextEditor = ({
         }}
       />
     </div>
-  );
-};
+  )
+}
 
-export default RichTextEditor;
+export default RichTextEditor

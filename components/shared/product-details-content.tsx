@@ -11,6 +11,7 @@ import AddToCart from '@/components/shared/product/add-to-cart'
 import { Product, Variant } from '@/types'
 import { generateId } from '@/lib/utils'
 
+import DOMPurify from 'dompurify'
 export default function ProductDetailsContent({
   initialProduct,
   initialVariant,
@@ -75,7 +76,19 @@ export default function ProductDetailsContent({
           />
           <Separator className='my-2' />
           <SelectVariant initialColor={initialColor} />
-          <p className='p-medium-16'>{product.description}</p>
+          <p className='p-medium-16'></p>
+
+          <div className='prose'>
+            {product.description ? (
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: DOMPurify.sanitize(product.description),
+                }}
+              ></div>
+            ) : (
+              <p>No description provided.</p>
+            )}
+          </div>
         </div>
         <div>
           <Card>

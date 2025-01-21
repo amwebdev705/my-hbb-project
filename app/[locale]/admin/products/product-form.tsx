@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useForm, useFieldArray } from 'react-hook-form'
 
-import 'draft-js/dist/Draft.css'
+// import 'draft-js/dist/Draft.css'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import {
@@ -27,6 +27,8 @@ import { toSlug } from '@/lib/utils'
 import { IProductInput } from '@/types'
 import RichTextEditor from '@/components/shared/product/rich-text-editor'
 import { IProduct } from '@/lib/db/models/product.model'
+
+import DOMPurify from 'dompurify'
 
 const productDefaultValues: IProductInput =
   process.env.NODE_ENV === 'development'
@@ -415,9 +417,22 @@ const ProductForm = ({
                 <FormControl>
                   <RichTextEditor
                     value={field.value || ''}
-                    onChange={(content) => field.onChange(content)} // Ensure `content` updates the form field
+                    onChange={(content) => field.onChange(content)}
                   />
                 </FormControl>
+                {/* Render the saved HTML content */}
+                <div className='prose mt-4'>
+                  {field.value ? (
+                    <div
+                      dangerouslySetInnerHTML={{
+                        __html: DOMPurify.sanitize(field.value || ''), // Sanitize before rendering
+                      }}
+                      className='prose'
+                    ></div>
+                  ) : (
+                    <p>No description provided.</p>
+                  )}
+                </div>
                 <FormMessage />
               </FormItem>
             )}
@@ -517,20 +532,6 @@ const ProductForm = ({
                         <FormControl>
                           <Input placeholder='Color' {...field} />
                         </FormControl>
-
-  {/* Preview Section */}
-  <div className="mt-4">
-        <h4 className="font-bold">Preview:</h4>
-        <div
-          dangerouslySetInnerHTML={{ __html: field.value || '' }}
-          className="prose"
-        ></div>
-      </div>
-
-
-
-
-
                         <FormMessage />
                       </FormItem>
                     )}
