@@ -65,11 +65,11 @@ const ProductCard = ({
       </div>
 
       <ProductPrice
-      isDeal={Array.isArray(product.tags) && product.tags.includes('todays-deal')} // Ensure tags is an array
-      price={product.price}
-      listPrice={product.listPrice}
-      forListing
-    />
+        isDeal={product?.tags?.includes('todays-deal')}
+        price={product.price}
+        listPrice={product.listPrice}
+        forListing
+      />
     </div>
   )
   const AddButton = () => (

@@ -31,8 +31,8 @@ export const ReviewInputSchema = z.object({
 // Variant Schema and Interface
 export const ProductVariantSchema = z.object({
   sku: z.string().optional(),
-  images: z.array(z.string()).min(1, 'Product must have at least one image'),
-  price: z.number().min(0, 'Price must be greater than or equal to 0'),
+  images: z.array(z.string()).min(0, 'Leave empty if variant product'),
+  price: z.coerce.number().min(0, 'Price must be greater than or equal to 0'),
   countInStock: z.coerce
     .number()
     .int()
@@ -51,7 +51,9 @@ export const ProductInputSchema = z.object({
   category: z.string().min(1, 'Category is required'),
   images: z.array(z.string()).min(1, 'Product must have at least one image'),
   brand: z.string().min(1, 'Brand is required'),
-  description: z.string().min(10, 'Description must be at least 10 characters long'),
+  description: z
+    .string()
+    .min(10, 'Description must be at least 10 characters long'),
   isPublished: z.boolean(),
   isFavorite: z.boolean(),
   price: z.coerce.number().min(0, 'Price must be greater than or equal to 0'),
@@ -86,14 +88,32 @@ export const ProductInputSchema = z.object({
     .number()
     .int()
     .nonnegative('Number of sales must be a non-negative number'),
-  variants: z.array(ProductVariantSchema).optional(),
+  variants: z
+    .array(
+      z.object({
+        sku: z.string().optional(),
+        images: z.array(z.string()).optional(),
+        price: z.number().optional(),
+        countInStock: z.number().optional(),
+        color: z.string().optional(),
+        size: z.string().optional(),
+      })
+    )
+    .optional(),
 })
 export type IProductInput = z.infer<typeof ProductInputSchema>
 
-export interface Product extends IProductInput {
+export interface Product extends Omit<IProductInput, 'variants'> {
   _id: string // Unique identifier
   color?: string // Ensure color is an array
-  variants?: Variant[] // Variants can be undefined
+  variants: Array<{
+    sku?: string
+    images?: string[]
+    price?: number
+    countInStock?: number
+    color?: string
+    size?: string
+  }> // Match the schema's definition
 }
 
 // Product Update Schema

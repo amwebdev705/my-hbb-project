@@ -17,26 +17,32 @@ const RichTextEditor = ({
 
   // Auto-grow functionality
   useEffect(() => {
-    const editor = editorRef.current?.querySelector('.ql-editor') as HTMLElement;
-    if (editor) {
-      const adjustHeight = () => {
+    const adjustHeight = () => {
+      const editor = editorRef.current?.querySelector('.ql-editor') as HTMLElement;
+      if (editor) {
         editor.style.height = 'auto'; // Reset height
         editor.style.height = `${editor.scrollHeight}px`; // Set to content height
-      };
+      }
+    };
 
-      // Adjust height initially and on input
-      adjustHeight();
+    adjustHeight(); // Initial adjustment
+    const editor = editorRef.current?.querySelector('.ql-editor') as HTMLElement;
+    if (editor) {
       editor.addEventListener('input', adjustHeight);
-
-      return () => editor.removeEventListener('input', adjustHeight);
     }
+
+    return () => {
+      if (editor) {
+        editor.removeEventListener('input', adjustHeight);
+      }
+    };
   }, [value]);
 
   return (
     <div ref={editorRef} className="border rounded-md shadow-sm">
       <ReactQuill
         theme="snow"
-        value={value}
+        value={value || ''}
         onChange={onChange}
         placeholder="Write your description here..."
         className="ql-container"

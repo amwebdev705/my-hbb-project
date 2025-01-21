@@ -113,6 +113,25 @@ const ProductForm = ({
   // const { watch, setValue } = form
 
   async function onSubmit(values: IProductInput) {
+    const hasVariants = values.variants && values.variants.length > 0
+
+    if (hasVariants && values.variants) {
+      // Ensure values.variants is defined
+      const firstVariant = values.variants[0]
+      // Set default values if not explicitly provided
+      if (values.images.length === 0 && firstVariant.images?.[0]) {
+        values.images = [firstVariant.images[0]]
+      }
+
+      if (!values.price || values.price === 0) {
+        values.price = firstVariant.price || 0
+      }
+
+      if (!values.countInStock || values.countInStock === 0) {
+        values.countInStock = firstVariant.countInStock || 0
+      }
+    }
+
     const res =
       type === 'Create'
         ? await createProduct(values)
@@ -338,16 +357,28 @@ const ProductForm = ({
                 <FormLabel>Images</FormLabel>
                 <Card>
                   <CardContent className='space-y-2 mt-2 min-h-48'>
-                    <div className='flex justify-start items-center space-x-2'>
-                      {images.map((image: string) => (
-                        <Image
-                          key={image}
-                          src={image}
-                          alt='product image'
-                          className='w-20 h-20 object-cover object-center rounded-sm'
-                          width={100}
-                          height={100}
-                        />
+                    <div className='flex flex-wrap gap-4 items-center'>
+                      {images.map((image: string, index: number) => (
+                        <div key={index} className='relative'>
+                          <Image
+                            src={image}
+                            alt={`Product image ${index + 1}`}
+                            className='w-20 h-20 object-cover object-center rounded-sm'
+                            width={80}
+                            height={80}
+                          />
+                          <button
+                            type='button'
+                            onClick={() => {
+                              const updatedImages = [...images]
+                              updatedImages.splice(index, 1) // Remove the image at the current index
+                              form.setValue('images', updatedImages) // Update the form value
+                            }}
+                            className='absolute top-0 right-0 bg-red-500 text-white rounded-full p-1'
+                          >
+                            ✕
+                          </button>
+                        </div>
                       ))}
                       <FormControl>
                         <UploadButton
@@ -384,7 +415,7 @@ const ProductForm = ({
                 <FormControl>
                   <RichTextEditor
                     value={field.value || ''}
-                    onChange={(content) => field.onChange(content)}
+                    onChange={(content) => field.onChange(content)} // Ensure `content` updates the form field
                   />
                 </FormControl>
                 <FormMessage />
@@ -486,6 +517,20 @@ const ProductForm = ({
                         <FormControl>
                           <Input placeholder='Color' {...field} />
                         </FormControl>
+
+  {/* Preview Section */}
+  <div className="mt-4">
+        <h4 className="font-bold">Preview:</h4>
+        <div
+          dangerouslySetInnerHTML={{ __html: field.value || '' }}
+          className="prose"
+        ></div>
+      </div>
+
+
+
+
+
                         <FormMessage />
                       </FormItem>
                     )}
@@ -532,7 +577,7 @@ const ProductForm = ({
                                 type='button'
                                 onClick={() =>
                                   field.onChange(
-                                    field.value.filter((_, idx) => idx !== i)
+                                    field.value?.filter((_, idx) => idx !== i)
                                   )
                                 }
                                 className='absolute top-0 right-0 bg-red-500 text-white rounded-full p-1'
