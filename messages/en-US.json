@@ -50,6 +50,15 @@
     "Best Deals on Wrist Watches": "Best Deals on Wrist Watches"
   },
   "Product": {
+  
+    "AddToCart": "Add to Cart",
+    "GoToCart": "Go to Cart",
+    "BuyNow": "Buy Now",
+    "OutOfStockMessage": "Only {available} items are available in stock.",
+  
+    "AddedToCart": "Product added to the cart successfully.",
+
+
     "Added to Cart": "Added to Cart",
     "Go to Cart": "Go to Cart",
     "Deleted User": "Deleted User",

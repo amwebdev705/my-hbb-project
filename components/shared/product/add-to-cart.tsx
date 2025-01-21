@@ -1,79 +1,92 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-'use client'
+'use client';
 
-import { Button } from '@/components/ui/button'
+import { Button } from '@/components/ui/button';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
-import useCartStore from '@/hooks/use-cart-store'
-import { useToast } from '@/hooks/use-toast'
-import { OrderItem } from '@/types'
-import { useTranslations } from 'next-intl'
-import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+} from '@/components/ui/select';
+import useCartStore from '@/hooks/use-cart-store';
+import { useToast } from '@/hooks/use-toast';
+import { OrderItem } from '@/types';
+import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
+import { useProductStore } from '@/stores/product-store';
 
 export default function AddToCart({
   item,
   minimal = false,
 }: {
-  item: OrderItem
-  minimal?: boolean
+  item: OrderItem;
+  minimal?: boolean;
 }) {
-  const router = useRouter()
-  const { toast } = useToast()
+  const router = useRouter();
+  const { toast } = useToast();
+  const { addItem } = useCartStore();
 
-  const { addItem } = useCartStore()
+  const { setQuantity, getQuantity } = useProductStore();
+  const t = useTranslations();
 
-  //PROMPT: add quantity state
-  const [quantity, setQuantity] = useState(1)
+  const stockCount = item.countInStock || 0;
+  const quantity = getQuantity(item.product);
 
-  const t = useTranslations()
+  const handleAddToCart = async () => {
+    if (quantity > stockCount) {
+      toast({
+        variant: 'destructive',
+        description: t('Product.OutOfStockMessage', { available: stockCount }),
+      });
+      return;
+    }
+
+    try {
+      await addItem(item, quantity);
+      toast({
+        description: t('Product.AddedToCart'),
+        action: (
+          <Button
+            onClick={() => {
+              router.push('/cart');
+            }}
+          >
+            {t('Product.GoToCart')}
+          </Button>
+        ),
+      });
+    } catch (error) {
+      if (error instanceof Error) {
+        toast({
+          variant: 'destructive',
+          description: error.message,
+        });
+      } else {
+        console.error('Unknown error occurred:', error);
+      }
+    }
+  };
 
   return minimal ? (
     <Button
-      className='rounded-full w-auto'
-      onClick={() => {
-        try {
-          addItem(item, 1)
-          toast({
-            description: t('Product.Added to Cart'),
-            action: (
-              <Button
-                onClick={() => {
-                  router.push('/cart')
-                }}
-              >
-                {t('Product.Go to Cart')}
-              </Button>
-            ),
-          })
-        } catch (error: any) {
-          toast({
-            variant: 'destructive',
-            description: error.message,
-          })
-        }
-      }}
+      className="rounded-full bg-blue-500 text-white hover:bg-blue-600 transition-all w-full"
+      onClick={handleAddToCart}
     >
-      {t('Product.Add to Cart')}
+      {t('Product.AddToCart')}
     </Button>
   ) : (
-    <div className='w-full space-y-2'>
+    <div className="w-full space-y-2">
       <Select
         value={quantity.toString()}
-        onValueChange={(i) => setQuantity(Number(i))}
+        onValueChange={(value) => setQuantity(item.product, Number(value))}
       >
-        <SelectTrigger className=''>
+        <SelectTrigger>
           <SelectValue>
             {t('Product.Quantity')}: {quantity}
           </SelectValue>
         </SelectTrigger>
-        <SelectContent position='popper'>
-          {Array.from({ length: item.countInStock }).map((_, i) => (
+        <SelectContent>
+          {Array.from({ length: stockCount }).map((_, i) => (
             <SelectItem key={i + 1} value={`${i + 1}`}>
               {i + 1}
             </SelectItem>
@@ -81,40 +94,9 @@ export default function AddToCart({
         </SelectContent>
       </Select>
 
-      <Button
-        className='rounded-full w-full'
-        type='button'
-        onClick={async () => {
-          try {
-            const itemId = await addItem(item, quantity)
-            router.push(`/cart/${itemId}`)
-          } catch (error: any) {
-            toast({
-              variant: 'destructive',
-              description: error.message,
-            })
-          }
-        }}
-      >
-        {t('Product.Add to Cart')}
-      </Button>
-      <Button
-        variant='secondary'
-        onClick={() => {
-          try {
-            addItem(item, quantity)
-            router.push(`/checkout`)
-          } catch (error: any) {
-            toast({
-              variant: 'destructive',
-              description: error.message,
-            })
-          }
-        }}
-        className='w-full rounded-full '
-      >
-        {t('Product.Buy Now')}
+      <Button className="rounded-full w-full" onClick={handleAddToCart}>
+        {t('Product.AddToCart')}
       </Button>
     </div>
-  )
+  );
 }

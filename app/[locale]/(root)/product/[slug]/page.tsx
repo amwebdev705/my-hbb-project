@@ -42,15 +42,14 @@ export default async function ProductDetails({
   };
 
   const initialVariant =
-    transformedProduct.variants?.find((variant) => variant.color === color) ||
-    null;
+  transformedProduct.variants?.find((variant) => variant.color === color) || null;
 
   return (
     <ProductDetailsContent
-      initialProduct={transformedProduct}
-      initialVariant={initialVariant}
-      initialColor={color || ''}
-      translations={translations}
-    />
+    initialProduct={transformedProduct}
+    initialVariant={initialVariant}
+    initialColor={color || ''}
+    translations={translations}
+  />
   );
 }
