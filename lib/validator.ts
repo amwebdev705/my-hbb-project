@@ -51,11 +51,11 @@ export const ProductInputSchema = z.object({
   category: z.string().min(1, 'Category is required'),
   images: z.array(z.string()).min(1, 'Product must have at least one image'),
   brand: z.string().min(1, 'Brand is required'),
-  description: z.string().min(1, 'Description is required'),
+  description: z.string().min(10, 'Description must be at least 10 characters long'),
   isPublished: z.boolean(),
   isFavorite: z.boolean(),
-  price: z.number().min(0, 'Price must be greater than or equal to 0'),
-  listPrice: z
+  price: z.coerce.number().min(0, 'Price must be greater than or equal to 0'),
+  listPrice: z.coerce
     .number()
     .min(0, 'List price must be greater than or equal to 0')
     .optional(),
@@ -63,7 +63,7 @@ export const ProductInputSchema = z.object({
     .number()
     .int()
     .nonnegative('Count in stock must be a non-negative number'),
-  tags: z.array(z.string()).default([]),
+  tags: z.string().optional(),
   size: z.string().optional(),
   color: z.string().optional(), // Ensure color is an array
   avgRating: z.coerce
@@ -88,7 +88,6 @@ export const ProductInputSchema = z.object({
     .nonnegative('Number of sales must be a non-negative number'),
   variants: z.array(ProductVariantSchema).optional(),
 })
-
 export type IProductInput = z.infer<typeof ProductInputSchema>
 
 export interface Product extends IProductInput {
@@ -232,7 +231,7 @@ export const UserSignUpSchema = UserSignInSchema.extend({
 })
 
 export const UserNameSchema = z.object({
-  name: z.string().min(1, 'Name is required').max(100, 'Name is too long'),
+  name: UserName,
 })
 
 // WEBPAGE
@@ -241,7 +240,6 @@ export const WebPageInputSchema = z.object({
   slug: z.string().min(3, 'Slug must be at least 3 characters'),
   content: z.string().min(1, 'Content is required'),
   isPublished: z.boolean(),
-  isFavorite: z.boolean(),
 })
 
 export const WebPageUpdateSchema = WebPageInputSchema.extend({

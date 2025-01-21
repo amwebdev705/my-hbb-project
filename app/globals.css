@@ -2,13 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  font-family: Arial, Helvetica, sans-serif;
-  @apply bg-red-50 bg-cover;
-  background-size: 100%;
-
-}
-
 @layer base {
   :root {
     --background: 0 0% 97%;
@@ -64,55 +57,59 @@ body {
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
   }
-}
 
-@layer base {
+  /* body {
+    font-family: Arial, Helvetica, sans-serif;
+    @apply bg-background text-foreground bg-cover;
+    background-size: 100%;
+  } */
+
   * {
     @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
   }
 }
 
 @layer utilities {
-
+  /* Typography utilities */
   .web-page-content p {
     @apply py-2;
   }
+
   .highlight-link a,
   a.highlight-link {
-    @apply text-sky-700  hover:text-orange-700 hover:underline;
+    @apply text-sky-700 hover:text-orange-700 hover:underline;
   }
+
+  /* Button utilities */
   .header-button {
     @apply cursor-pointer p-1 border border-transparent hover:border-white rounded-[2px];
   }
   .item-button {
     @apply p-3 hover:bg-muted hover:no-underline;
   }
+
+  /* Headings */
   .h1-bold {
     @apply font-bold text-2xl lg:text-3xl;
   }
   .h2-bold {
     @apply font-bold text-lg lg:text-xl;
   }
+
+  /* Layout */
   .flex-between {
     @apply flex justify-between items-center;
   }
-  
-}
 
-
-styles.css
-.perspective {
-  perspective: 1000px;
-}
-
-.transform-style-preserve-3d {
-  transform-style: preserve-3d;
-}
-
-.backface-hidden {
-  backface-visibility: hidden;
+  /* 3D Effects */
+  .perspective {
+    perspective: 1000px;
+  }
+  .transform-style-preserve-3d {
+    transform-style: preserve-3d;
+  }
+  .backface-hidden {
+    backface-visibility: hidden;
+  }
 }
 

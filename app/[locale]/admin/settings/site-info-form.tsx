@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
@@ -13,9 +14,9 @@ import { toast } from '@/hooks/use-toast'
 import { UploadButton } from '@/lib/uploadthing'
 import { ISettingInput } from '@/types'
 import { TrashIcon } from 'lucide-react'
-import Image from 'next/image'
 import React from 'react'
 import { UseFormReturn } from 'react-hook-form'
+
 export default function SiteInfoForm({
   form,
   id,
@@ -24,6 +25,7 @@ export default function SiteInfoForm({
   id: string
 }) {
   const { watch, control } = form
+
   const siteLogo = watch('site.logo')
   return (
     <Card id={id}>
@@ -41,10 +43,12 @@ export default function SiteInfoForm({
                 <FormControl>
                   <Input placeholder='Enter site name' {...field} />
                 </FormControl>
+
                 <FormMessage />
               </FormItem>
             )}
           />
+
           <FormField
             control={control}
             name='site.url'
@@ -54,6 +58,7 @@ export default function SiteInfoForm({
                 <FormControl>
                   <Input placeholder='Enter url' {...field} />
                 </FormControl>
+
                 <FormMessage />
               </FormItem>
             )}
@@ -70,13 +75,15 @@ export default function SiteInfoForm({
                   <FormControl>
                     <Input placeholder='Enter image url' {...field} />
                   </FormControl>
+
                   <FormMessage />
                 </FormItem>
               )}
             />
+
             {siteLogo && (
               <div className='flex my-2 items-center gap-2'>
-                <Image src={siteLogo} alt='logo' width={48} height={48} />
+                <img src={siteLogo} alt='logo' width={48} height={48} />
                 <Button
                   type='button'
                   variant='outline'
@@ -115,6 +122,7 @@ export default function SiteInfoForm({
                     {...field}
                   />
                 </FormControl>
+
                 <FormMessage />
               </FormItem>
             )}
@@ -130,6 +138,7 @@ export default function SiteInfoForm({
                 <FormControl>
                   <Input placeholder='Enter slogan name' {...field} />
                 </FormControl>
+
                 <FormMessage />
               </FormItem>
             )}
@@ -143,6 +152,7 @@ export default function SiteInfoForm({
                 <FormControl>
                   <Input placeholder='Enter keywords' {...field} />
                 </FormControl>
+
                 <FormMessage />
               </FormItem>
             )}
@@ -158,6 +168,7 @@ export default function SiteInfoForm({
                 <FormControl>
                   <Input placeholder='Enter phone number' {...field} />
                 </FormControl>
+
                 <FormMessage />
               </FormItem>
             )}
@@ -171,6 +182,7 @@ export default function SiteInfoForm({
                 <FormControl>
                   <Input placeholder='Enter email address' {...field} />
                 </FormControl>
+
                 <FormMessage />
               </FormItem>
             )}
@@ -186,6 +198,7 @@ export default function SiteInfoForm({
                 <FormControl>
                   <Input placeholder='Enter address' {...field} />
                 </FormControl>
+
                 <FormMessage />
               </FormItem>
             )}
@@ -199,6 +212,7 @@ export default function SiteInfoForm({
                 <FormControl>
                   <Input placeholder='Enter copyright' {...field} />
                 </FormControl>
+
                 <FormMessage />
               </FormItem>
             )}

@@ -9,16 +9,18 @@ export default function AppInitializer({
   setting: ClientSetting
   children: React.ReactNode
 }) {
-  const [rendered, setRendered] = useState(false)
+  const [initialized, setInitialized] = useState(false)
 
   useEffect(() => {
-    setRendered(true)
-  }, [setting])
-  if (!rendered) {
-    useSettingStore.setState({
-      setting,
-    })
+    // Update the setting in the store when the component mounts or when `setting` changes
+    useSettingStore.setState({ setting })
+    setInitialized(true)
+  }, [setting]) // Depend on `setting` to react to changes
+
+  // Optionally render a fallback while initializing
+  if (!initialized) {
+    return null // Or a loading spinner, if needed
   }
 
-  return children
+  return <>{children}</>
 }

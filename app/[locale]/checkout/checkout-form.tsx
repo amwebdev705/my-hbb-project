@@ -46,7 +46,7 @@ const shippingAddressDefaultValues =
         fullName: 'Basir',
         street: '1911, 65 Sherbrooke Est',
         city: 'Montreal',
-        province: 'Quebec',
+        state: 'Quebec',
         phone: '4181234567',
         postalCode: 'H2X 1C4',
         country: 'Canada',
@@ -55,7 +55,7 @@ const shippingAddressDefaultValues =
         fullName: '',
         street: '',
         city: '',
-        province: '',
+        state: '',
         phone: '',
         postalCode: '',
         country: '',
@@ -350,10 +350,10 @@ const CheckoutForm = () => {
                             name='state'
                             render={({ field }) => (
                               <FormItem className='w-full'>
-                                <FormLabel>State</FormLabel>
+                                <FormLabel>Province</FormLabel>
                                 <FormControl>
                                   <Input
-                                    placeholder='Enter state'
+                                    placeholder='Enter province'
                                     {...field}
                                   />
                                 </FormControl>

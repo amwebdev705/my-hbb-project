@@ -5,7 +5,7 @@ export interface IUser extends Document, IUserInput {
   _id: string
   createdAt: Date
   updatedAt: Date
-  lastLogin?: Date;
+  lastLogin?: Date
 }
 
 const userSchema = new Schema<IUser>(

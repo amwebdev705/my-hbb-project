@@ -1,10 +1,6 @@
 import BrowsingHistoryList from '@/components/shared/browsing-history-list'
 import HeroPage from '@/components/shared/hero'
 import FavoriteProducts from '@/components/shared/hero/hbbFaves'
-// import FavoriteProducts from '@/components/shared/hero/hbbFaves'
-// import FeatureHomeVideo from '@/components/shared/hero/featuredHomeVideo'
-// import HBBFaves from '@/components/shared/hero/hbbFaves'
-// import Hero from '@/components/shared/hero/hero'
 import { HomeCard } from '@/components/shared/home/home-card'
 import { HomeCarousel } from '@/components/shared/home/home-carousel'
 import ProductSlider from '@/components/shared/product/product-slider'
@@ -27,6 +23,7 @@ export default async function HomePage() {
   const bestSellingProducts = await getProductsByTag({ tag: 'best-seller' })
 
   const favorites = await getIsFavorite()
+
 
   const categories = (await getAllCategories()).slice(0, 4)
   const newArrivals = await getProductsForCard({
@@ -82,7 +79,6 @@ export default async function HomePage() {
       <HomeCarousel items={carousels} />
       <HeroPage />
       <FavoriteProducts favorites={favorites} />
-
       <div className='md:p-4 md:space-y-4 bg-border'>
         <HomeCard cards={cards} />
         <Card className='w-full rounded-none'>

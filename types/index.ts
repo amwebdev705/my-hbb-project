@@ -45,7 +45,7 @@ export interface Product {
   _id: string
   slug: string
   name: string
-  tags: string[]
+  tags: string
   description: string
   brand: string
   category: string
@@ -57,7 +57,6 @@ export interface Product {
   size?: string[]
   variants?: Variant[] | undefined
 }
-
 
 export type Data = {
   settings: ISettingInput[]
@@ -104,8 +103,6 @@ export type IUserName = z.infer<typeof UserNameSchema>
 
 // webpage
 export type IWebPageInput = z.infer<typeof WebPageInputSchema>
-
-
 
 // setting
 export type ICarousel = z.infer<typeof CarouselSchema>

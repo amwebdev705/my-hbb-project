@@ -1,5 +1,6 @@
 import type { Config } from 'tailwindcss'
 import { withUt } from 'uploadthing/tw'
+import tailwindcssAnimate from 'tailwindcss-animate' // Use import instead of require
 
 const config: Config = withUt({
   darkMode: ['class'],
@@ -10,14 +11,22 @@ const config: Config = withUt({
   ],
   theme: {
     extend: {
-      translate: {
-        0: '20px',
+      borderRadius: {
+        md: '0.375rem',
       },
-
-      perspective: '1000px',
-      transformStyle: 'preserve-3d',
-      backfaceVisibility: 'hidden',
-
+      fontFamily: {
+        cormorantGaramond: ['var(--font-cormorant-garamond)', 'serif'],
+        poppins: ['var(--font-poppins)', 'serif'],
+      },
+      keyframes: {
+        scroll: {
+          '0%': { transform: 'translateX(100%)' },
+          '100%': { transform: 'translateX(-100%)' },
+        },
+      },
+      animation: {
+        scroll: 'scroll 10s linear infinite',
+      },
       colors: {
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
@@ -60,42 +69,9 @@ const config: Config = withUt({
           '5': 'hsl(var(--chart-5))',
         },
       },
-      borderRadius: {
-        lg: 'var(--radius)',
-        md: 'calc(var(--radius) - 2px)',
-        sm: 'calc(var(--radius) - 4px)',
-      },
     },
   },
-
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  plugins: [
-    function ({
-      addUtilities,
-    }: {
-      addUtilities: (utilities: {
-        [key: string]: { [key: string]: string }
-      }) => void
-    }) {
-      addUtilities({
-        '.perspective': {
-          perspective: '1000px',
-        },
-        '.transform-style-preserve-3d': {
-          transformStyle: 'preserve-3d',
-        },
-        '.backface-hidden': {
-          backfaceVisibility: 'hidden',
-        },
-        '.rotate-y-180': {
-          transform: 'rotateY(180deg)',
-        },
-        '.rotate-y-0': {
-          transform: 'rotateY(0deg)',
-        },
-      })
-    },
-  ],
-})
+  plugins: [tailwindcssAnimate], // Use imported module here
+}) satisfies Config
 
 export default config

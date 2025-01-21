@@ -88,8 +88,8 @@ const productSchema = new Schema<IProduct>(
       required: true,
     },
     tags: {
-      type: [String],
-      default: ['new arrival'],
+      type: String,
+      required: false,
     },
     color: {
       type: String,

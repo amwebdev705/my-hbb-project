@@ -14,6 +14,7 @@ import { ISettingInput } from '@/types'
 import { TrashIcon } from 'lucide-react'
 import Image from 'next/image'
 import { useFieldArray, UseFormReturn } from 'react-hook-form'
+
 export default function CarouselForm({
   form,
   id,
@@ -90,13 +91,16 @@ export default function CarouselForm({
                   render={({ field }) => (
                     <FormItem>
                       {index == 0 && <FormLabel>Image</FormLabel>}
+
                       <FormControl>
                         <Input placeholder='Enter image url' {...field} />
                       </FormControl>
+
                       <FormMessage />
                     </FormItem>
                   )}
                 />
+
                 {watch(`carousels.${index}.image`) && (
                   <Image
                     src={watch(`carousels.${index}.image`)}
@@ -137,6 +141,7 @@ export default function CarouselForm({
               </div>
             </div>
           ))}
+
           <Button
             type='button'
             variant={'outline'}

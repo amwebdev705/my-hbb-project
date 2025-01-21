@@ -1,4 +1,4 @@
-import { Geist, Geist_Mono } from 'next/font/google'
+import { Cormorant_Garamond, Poppins} from 'next/font/google'
 import '../globals.css'
 import ClientProviders from '@/components/shared/client-providers'
 import { getDirection } from '@/i18n-config'
@@ -9,14 +9,17 @@ import { notFound } from 'next/navigation'
 import { getSetting } from '@/lib/actions/setting.actions'
 import { cookies } from 'next/headers'
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
+const cormorant_Garamond = Cormorant_Garamond({
   subsets: ['latin'],
+  variable: '--font-cormorant-garamond',
+  weight: ['300', '400', '500', '600', '700'],
 })
 
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
+
+const poppins = Poppins({
   subsets: ['latin'],
+  variable: '--font-poppins',
+  weight: ['300', '400', '500', '600', '700'],
 })
 
 export async function generateMetadata() {
@@ -59,7 +62,7 @@ export default async function AppLayout({
       suppressHydrationWarning
     >
       <body
-        className={`min-h-screen ${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`min-h-screen ${cormorant_Garamond.variable} ${poppins.variable} bg-neutral-100 antialiased`}
       >
         <NextIntlClientProvider locale={locale} messages={messages}>
           <ClientProviders setting={{ ...setting, currency }}>

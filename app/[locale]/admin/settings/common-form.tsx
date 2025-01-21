@@ -19,6 +19,7 @@ import { COLORS, THEMES } from '@/lib/constants'
 import { ISettingInput } from '@/types'
 import React from 'react'
 import { UseFormReturn } from 'react-hook-form'
+
 export default function CommonForm({
   form,
   id,
@@ -27,6 +28,7 @@ export default function CommonForm({
   id: string
 }) {
   const { control } = form
+
   return (
     <Card id={id}>
       <CardHeader>

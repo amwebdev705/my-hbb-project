@@ -4,6 +4,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useForm, useFieldArray } from 'react-hook-form'
+
+import 'draft-js/dist/Draft.css'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import {
@@ -16,17 +18,15 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
 import { useToast } from '@/hooks/use-toast'
 import { createProduct, updateProduct } from '@/lib/actions/product.actions'
-import { IProduct } from '@/lib/db/models/product.model'
 import { UploadButton } from '@/lib/uploadthing'
 import { ProductInputSchema, ProductUpdateSchema } from '@/lib/validator'
 import { Checkbox } from '@/components/ui/checkbox'
 import { toSlug } from '@/lib/utils'
 import { IProductInput } from '@/types'
-
-
+import RichTextEditor from '@/components/shared/product/rich-text-editor'
+import { IProduct } from '@/lib/db/models/product.model'
 
 const productDefaultValues: IProductInput =
   process.env.NODE_ENV === 'development'
@@ -46,7 +46,7 @@ const productDefaultValues: IProductInput =
         numSales: 0,
         isPublished: false,
         isFavorite: false,
-        tags: [],
+        tags: '',
         size: '',
         color: '',
         ratingDistribution: [],
@@ -69,7 +69,7 @@ const productDefaultValues: IProductInput =
         numSales: 0,
         isPublished: false,
         isFavorite: false,
-        tags: [],
+        tags: '',
         size: '',
         color: '',
         ratingDistribution: [],
@@ -110,6 +110,7 @@ const ProductForm = ({
   })
 
   const images = form.watch('images')
+  // const { watch, setValue } = form
 
   async function onSubmit(values: IProductInput) {
     const res =
@@ -178,23 +179,23 @@ const ProductForm = ({
               </FormItem>
             )}
           />
-           <div>
-          <FormField
-            control={form.control}
-            name='isFavorite'
-            render={({ field }) => (
-              <FormItem className='space-x-2 items-center'>
-                <FormControl>
-                  <Checkbox
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                </FormControl>
-                <FormLabel>Is Favorite?</FormLabel>
-              </FormItem>
-            )}
-          />
-        </div>
+          <div>
+            <FormField
+              control={form.control}
+              name='isFavorite'
+              render={({ field }) => (
+                <FormItem className='space-x-2 items-center'>
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormLabel>Is Favorite?</FormLabel>
+                </FormItem>
+              )}
+            />
+          </div>
         </div>
         <div className='flex flex-col gap-5 md:flex-row'>
           <FormField
@@ -373,23 +374,19 @@ const ProductForm = ({
         </div>
 
         <div>
+          {/* Description Field */}
           <FormField
             control={form.control}
             name='description'
             render={({ field }) => (
-              <FormItem className='w-full'>
+              <FormItem>
                 <FormLabel>Description</FormLabel>
                 <FormControl>
-                  <Textarea
-                    placeholder='Tell us a little bit about yourself'
-                    className='resize-none'
-                    {...field}
+                  <RichTextEditor
+                    value={field.value || ''}
+                    onChange={(content) => field.onChange(content)}
                   />
                 </FormControl>
-                <FormDescription>
-                  You can <span>@mention</span> other users and organizations to
-                  link to them.
-                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -400,15 +397,19 @@ const ProductForm = ({
             control={form.control}
             name='isPublished'
             render={({ field }) => (
-              <FormItem className='space-x-2 items-center'>
-                <FormControl>
-                  <Checkbox
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                </FormControl>
-                <FormLabel>Is Published?</FormLabel>
-              </FormItem>
+              <>
+                <FormItem className='space-x-2 items-center'>
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormLabel>Is Published?</FormLabel>
+                </FormItem>
+                <FormDescription></FormDescription>
+                <FormMessage />
+              </>
             )}
           />
         </div>

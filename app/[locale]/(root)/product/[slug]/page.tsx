@@ -28,12 +28,22 @@ export default async function ProductDetails({
 
   const transformedProduct = {
     ...product,
-    color: Array.isArray(product.color) ? product.color : product.color ? [product.color] : undefined,
-    size: Array.isArray(product.size) ? product.size : product.size ? [product.size] : undefined,
+    color: Array.isArray(product.color)
+      ? product.color
+      : product.color
+      ? [product.color]
+      : undefined,
+    size: Array.isArray(product.size)
+      ? product.size
+      : product.size
+      ? [product.size]
+      : undefined,
+    tags: product.tags || '', // Ensure tags is a string
   };
 
   const initialVariant =
-    transformedProduct.variants?.find((variant) => variant.color === color) || null;
+    transformedProduct.variants?.find((variant) => variant.color === color) ||
+    null;
 
   return (
     <ProductDetailsContent
