@@ -5,6 +5,7 @@ export interface IProductVariant {
   sku: string
   images: string[]
   price: number
+  listPrice: number
   countInStock: number
   color: string
   size: string
@@ -30,6 +31,10 @@ const variantSchema = new Schema<IProductVariant>(
     price: {
       type: Number,
       required: true,
+    },
+    listPrice: {
+      type: Number,
+      required: false,
     },
     countInStock: {
       type: Number,

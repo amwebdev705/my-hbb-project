@@ -33,16 +33,16 @@ import DOMPurify from 'dompurify'
 const productDefaultValues: IProductInput =
   process.env.NODE_ENV === 'development'
     ? {
-        name: 'Sample Product',
-        slug: 'sample-product',
-        sku: 'sample- SP001',
-        category: 'Sample Category',
-        images: ['/images/p11-1.jpg'],
-        brand: 'Sample Brand',
-        description: 'This is a sample description of the product.',
-        price: 99.99,
+        name: '',
+        slug: '',
+        sku: '',
+        category: '',
+        images: [],
+        brand: '',
+        description: '',
+        price: 0,
         listPrice: 0,
-        countInStock: 15,
+        countInStock: 0,
         numReviews: 0,
         avgRating: 0,
         numSales: 0,
@@ -127,6 +127,9 @@ const ProductForm = ({
 
       if (!values.price || values.price === 0) {
         values.price = firstVariant.price || 0
+      }
+      if (!values.listPrice || values.listPrice === 0) {
+        values.listPrice = firstVariant.listPrice || 0
       }
 
       if (!values.countInStock || values.countInStock === 0) {
@@ -360,6 +363,7 @@ const ProductForm = ({
                 <Card>
                   <CardContent className='space-y-2 mt-2 min-h-48'>
                     <div className='flex flex-wrap gap-4 items-center'>
+                      {/* Display Uploaded Images */}
                       {images.map((image: string, index: number) => (
                         <div key={index} className='relative'>
                           <Image
@@ -373,7 +377,7 @@ const ProductForm = ({
                             type='button'
                             onClick={() => {
                               const updatedImages = [...images]
-                              updatedImages.splice(index, 1) // Remove the image at the current index
+                              updatedImages.splice(index, 1) // Remove the selected image
                               form.setValue('images', updatedImages) // Update the form value
                             }}
                             className='absolute top-0 right-0 bg-red-500 text-white rounded-full p-1'
@@ -382,11 +386,18 @@ const ProductForm = ({
                           </button>
                         </div>
                       ))}
+
+                      {/* Upload Button */}
                       <FormControl>
                         <UploadButton
                           endpoint='imageUploader'
                           onClientUploadComplete={(res: { url: string }[]) => {
-                            form.setValue('images', [...images, res[0].url])
+                            // Combine newly uploaded images with existing images
+                            const uploadedImages = res.map((r) => r.url)
+                            form.setValue('images', [
+                              ...images,
+                              ...uploadedImages,
+                            ])
                           }}
                           onUploadError={(error: Error) => {
                             toast({
@@ -399,7 +410,6 @@ const ProductForm = ({
                     </div>
                   </CardContent>
                 </Card>
-
                 <FormMessage />
               </FormItem>
             )}
@@ -471,6 +481,7 @@ const ProductForm = ({
                   sku: '',
                   images: [],
                   price: 0,
+                  listPrice: 0,
                   countInStock: 0,
                   color: '',
                   size: '',
@@ -499,10 +510,27 @@ const ProductForm = ({
                   />
                   <FormField
                     control={form.control}
+                    name={`variants.${index}.listPrice`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>List Price</FormLabel>
+                        <FormControl>
+                          <Input
+                            type='number'
+                            placeholder='List Price'
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
                     name={`variants.${index}.price`}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Price</FormLabel>
+                        <FormLabel>Net Price</FormLabel>
                         <FormControl>
                           <Input type='number' placeholder='Price' {...field} />
                         </FormControl>

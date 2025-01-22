@@ -171,10 +171,15 @@ export async function getProductsByTag({
 
 // GET ONE PRODUCT BY SLUG
 export async function getProductBySlug(slug: string) {
-  await connectToDatabase()
-  const product = await Product.findOne({ slug, isPublished: true })
-  if (!product) throw new Error('Product not found')
-  return JSON.parse(JSON.stringify(product)) as IProduct
+  await connectToDatabase();
+  console.log('Searching for product with slug:', slug);
+
+  const product = await Product.findOne({ slug, isPublished: true });
+  if (!product) {
+    console.log('No product found for slug:', slug);
+    throw new Error('Product not found');
+  }
+  return JSON.parse(JSON.stringify(product)) as IProduct;
 }
 
 // GET RELATED PRODUCTS: PRODUCTS WITH SAME CATEGORY

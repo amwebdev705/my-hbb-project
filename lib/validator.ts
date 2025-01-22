@@ -33,6 +33,10 @@ export const ProductVariantSchema = z.object({
   sku: z.string().optional(),
   images: z.array(z.string()).min(0, 'Leave empty if variant product'),
   price: z.coerce.number().min(0, 'Price must be greater than or equal to 0'),
+  listPrice: z.coerce
+    .number()
+    .min(0, 'List price must be greater than or equal to 0')
+    .optional(),
   countInStock: z.coerce
     .number()
     .int()
@@ -93,8 +97,9 @@ export const ProductInputSchema = z.object({
       z.object({
         sku: z.string().optional(),
         images: z.array(z.string()).optional(),
-        price: z.number().optional(),
-        countInStock: z.number().optional(),
+        price: z.coerce.number().optional(),
+        listPrice: z.coerce.number().optional(),
+        countInStock: z.coerce.number().optional(),
         color: z.string().optional(),
         size: z.string().optional(),
       })
@@ -110,6 +115,7 @@ export interface Product extends Omit<IProductInput, 'variants'> {
     sku?: string
     images?: string[]
     price?: number
+    listPrice?: number
     countInStock?: number
     color?: string
     size?: string
@@ -120,6 +126,7 @@ export interface Product extends Omit<IProductInput, 'variants'> {
 export const ProductUpdateSchema = ProductInputSchema.extend({
   _id: z.string(),
 })
+
 // Order Item
 export const OrderItemSchema = z.object({
   clientId: z.string().min(1, 'clientId is required'),
@@ -140,6 +147,8 @@ export const OrderItemSchema = z.object({
   size: z.string().optional(),
   color: z.string().optional(),
 })
+
+// Shipping Address
 export const ShippingAddressSchema = z.object({
   fullName: z.string().min(1, 'Full name is required'),
   street: z.string().min(1, 'Address is required'),

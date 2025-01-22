@@ -37,6 +37,7 @@ export interface Variant {
   color: string
   size?: string
   price: number
+  listPrice?: number
   countInStock?: number
   images: string[]
   sku: string
