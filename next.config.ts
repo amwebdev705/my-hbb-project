@@ -26,6 +26,11 @@ const nextConfig: NextConfig = withNextIntl()({
         hostname: 'gravatar.com',
         port: '',
       },
+      {
+        protocol: 'https',
+        hostname: 'shadcnblocks.com',
+        port: '',
+      },
     ],
   },
 })
