@@ -30,10 +30,14 @@ export default async function Shop({
   })
 
   return (
-    <div className='container mx-auto'>
-      <div className='flex'>
-        {/* <FilterSidebar /> */}
-        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 p-4'>
+    // <div className='container mx-auto'>
+    //   <div className='flex'>
+    //     <FilterSidebar />
+    //     <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 p-4'>
+
+    <div className='bg-white'>
+      <div className='mx-auto max-w-7xl overflow-hidden sm:px-6 lg:px-8'>
+        <div className='-mx-px grid grid-cols-2 border-l border-gray-200 sm:mx-0 md:grid-cols-3 lg:grid-cols-4'>
           {products.map((product) => (
             <ProductCard key={product._id} product={product} />
           ))}

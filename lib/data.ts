@@ -1,7 +1,31 @@
-import { Data, IProductInput, IUserInput } from '@/types'
+import { Data, IProductInput, IUserInput, Package } from '@/types'
 import { toSlug } from './utils'
 import bcrypt from 'bcryptjs'
 import { i18n } from '@/i18n-config'
+
+interface Product extends Package {
+  // dimensions: any
+  // weight: any
+  name: string
+}
+
+export const cartProductsWhichCanBeShipped: Product[] = [
+  // {
+  //   name: "Product 1",
+  //   weight: { value: 5, unit: "ounce" },
+  //   dimensions: { height: 3, width: 15, length: 10, unit: "inch" },
+  // },
+  // {
+  //   name: "Product 2",
+  //   weight: { value: 0.5, unit: "ounce" },
+  //   dimensions: { height: 0.5, width: 3, length: 6, unit: "inch" },
+  // },
+  // {
+  //   name: "Product 3",
+  //   weight: { value: 0.8, unit: "ounce" },
+  //   dimensions: { height: 8, width: 6, length: 3, unit: "inch" },
+  // },
+]
 
 const users: IUserInput[] = [
   {

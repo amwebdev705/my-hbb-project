@@ -1,5 +1,3 @@
-'use client';
-
 import Image from 'next/image';
 import { useState } from 'react';
 
@@ -7,9 +5,20 @@ export default function ProductGallery({ images = [] }: { images?: string[] }) {
   const [selectedImage, setSelectedImage] = useState(0);
 
   return (
-    <div className="flex gap-2">
+    <div className="flex flex-col items-center">
+      {/* Main Image */}
+      <div className="mb-4">
+        <Image
+          src={images[selectedImage]}
+          width={500}
+          height={500}
+          alt="Main"
+          className="border"
+        />
+      </div>
+
       {/* Thumbnails */}
-      <div className="flex flex-col gap-2">
+      <div className="flex gap-2">
         {images.map((img, i) => (
           <button
             key={i}
@@ -21,17 +30,6 @@ export default function ProductGallery({ images = [] }: { images?: string[] }) {
             <Image src={img} width={50} height={50} alt={`Thumbnail ${i}`} />
           </button>
         ))}
-      </div>
-
-      {/* Main Image */}
-      <div>
-        <Image
-          src={images[selectedImage]}
-          width={500}
-          height={500}
-          alt="Main"
-          className="border"
-        />
       </div>
     </div>
   );

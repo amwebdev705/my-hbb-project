@@ -198,7 +198,7 @@ const jewelry = [
   },
 ]
 
-const solutionTechnologies = [
+const jewelrySubmenu = [
   {
     id: 'technology-1',
     title: 'Consectetur Labore',
@@ -219,7 +219,7 @@ const solutionTechnologies = [
   },
 ]
 
-const productCategories = [
+const productsSubMenu = [
   {
     title: 'Commodo Adipisicing',
     products: [
@@ -267,7 +267,7 @@ const productCategories = [
   },
 ]
 
-const globalBrands = [
+const ourBrandsSubmenu = [
   {
     title: 'Qui Deserunt',
     features: [
@@ -338,7 +338,7 @@ const globalBrands = [
   },
 ]
 
-const regions = [
+const ourBrandsSubmenuBottom = [
   {
     title: 'Asia-Pacific',
     locations: [
@@ -535,7 +535,7 @@ const topicGroups = [
   },
 ]
 
-const SolutionsMenu = () => (
+const JewelrySubmenuTop = () => (
   <div className='grid gap-8 sm:grid-cols-2'>
     <NavigationMenuLink
       href='#'
@@ -556,10 +556,12 @@ const SolutionsMenu = () => (
           </p>
         </div>
         <div className='relative aspect-[2/1] overflow-clip rounded-t pl-6 lg:max-w-[22rem] lg:pl-0'>
-          <img
+          <Image
             src='https://shadcnblocks.com/images/block/placeholder-1.svg'
             alt='placeholder'
             className='aspect-[2/1] h-full w-full translate-y-px object-cover object-center'
+            width={300}
+            height={300}
           />
         </div>
       </div>
@@ -571,7 +573,7 @@ const SolutionsMenu = () => (
         </strong>
       </div>
       <div className='grid gap-4 lg:grid-cols-2'>
-        {solutionTechnologies.map((technology) => (
+        {jewelrySubmenu.map((technology) => (
           <NavigationMenuLink
             key={technology.id}
             href='#'
@@ -632,7 +634,9 @@ const ProductsMenu = () => (
         <div className='absolute inset-0 bg-accent invert'></div>
         <div className='relative z-10 flex w-full flex-col space-y-12 text-left lg:space-y-0'>
           <div className='relative flex aspect-[2/1] max-h-[11rem] w-full flex-1 justify-center invert'>
-            <img
+            <Image
+              width={500}
+              height={500}
               src='https://shadcnblocks.com/images/block/placeholder-1.svg'
               alt='placeholder'
               className='h-full w-full object-cover object-center'
@@ -652,7 +656,7 @@ const ProductsMenu = () => (
       </NavigationMenuLink>
     </div>
     <div className='grid w-full gap-y-12 lg:gap-y-6'>
-      {productCategories.map((category) => (
+      {productsSubMenu.map((category) => (
         <div key={category.title} className='grid gap-y-2 lg:gap-y-6'>
           <div className='border-border text-left lg:border-b lg:pb-3'>
             <strong className='text-left text-xs font-medium uppercase tracking-wider text-muted-foreground'>
@@ -667,7 +671,12 @@ const ProductsMenu = () => (
                 className='group flex items-center space-x-6 border-b border-border py-5 text-left sm:py-7 lg:space-x-4 lg:border-0 lg:py-0'
               >
                 <div className='relative flex aspect-square w-6 shrink-0 items-center justify-center overflow-clip rounded md:size-9 md:p-2'>
-                  <img src={product.image} alt={product.title} />
+                  <Image
+                    width={500}
+                    height={500}
+                    src={product.image}
+                    alt={product.title}
+                  />
                 </div>
                 <div className='flex-1'>
                   <div className='text-sm font-medium text-foreground/85 group-hover:text-foreground'>
@@ -718,7 +727,7 @@ const GlobalBrandMenu = () => (
         </NavigationMenuLink>
       </div>
       <div className='grid w-full gap-y-12 lg:gap-y-6'>
-        {globalBrands.map((brand) => (
+        {ourBrandsSubmenu.map((brand) => (
           <div key={brand.title} className='grid gap-y-2 lg:gap-y-6'>
             <div className='border-border text-left lg:border-b lg:pb-3'>
               <strong className='text-left text-xs font-medium uppercase tracking-wider text-muted-foreground'>
@@ -758,7 +767,7 @@ const GlobalBrandMenu = () => (
         </strong>
       </div>
       <div className='grid gap-6 md:grid-cols-3 lg:grid-cols-4'>
-        {regions.map((region) => (
+        {ourBrandsSubmenuBottom.map((region) => (
           <div
             key={region.title}
             className='space-y-6 rounded-md border border-border p-6 lg:border-0 lg:p-0'
@@ -810,7 +819,9 @@ const CustomersMenu = () => (
           <div className='flex h-full border-t border-border sm:mr-[20%] sm:w-[110px] sm:border-none'>
             <div className='relative grid w-1/2 border-x border-border sm:w-full'>
               <div className='relative flex items-center justify-center border-b p-4'>
-                <img
+                <Image
+                  width={500}
+                  height={500}
                   src='https://shadcnblocks.com/images/block/logos/astro.svg'
                   alt='placeholder'
                   className='h-4 w-full'
@@ -829,7 +840,9 @@ const CustomersMenu = () => (
                 </div>
               </div>
               <div className='relative flex items-center justify-center border-b p-4'>
-                <img
+                <Image
+                  width={500}
+                  height={500}
                   src='https://shadcnblocks.com/images/block/logos/vercel.svg'
                   alt='placeholder'
                   className='h-4 w-full'
@@ -842,7 +855,9 @@ const CustomersMenu = () => (
                 </div>
               </div>
               <div className='relative flex items-center justify-center border-b p-4'>
-                <img
+                <Image
+                  width={500}
+                  height={500}
                   src='https://shadcnblocks.com/images/block/logos/shadcn-ui.svg'
                   alt='placeholder'
                   className='h-4 w-full'
@@ -855,7 +870,9 @@ const CustomersMenu = () => (
                 </div>
               </div>
               <div className='relative flex items-center justify-center p-4'>
-                <img
+                <Image
+                  width={500}
+                  height={500}
                   src='https://shadcnblocks.com/images/block/logos/supabase.svg'
                   alt='placeholder'
                   className='h-4 w-full'
@@ -890,7 +907,9 @@ const CustomersMenu = () => (
           <div className='absolute bottom-0 right-0 flex translate-x-[50%] translate-y-[50%] items-center justify-center bg-primary p-2'>
             <div className='size-1 rounded-full bg-primary-foreground'></div>
           </div>
-          <img
+          <Image
+            width={500}
+            height={500}
             src='https://shadcnblocks.com/images/block/logos/astro.svg'
             alt='placeholder'
             className='w-1/2 object-contain object-center opacity-100 invert transition-all duration-100 group-hover:scale-[1.1]'
@@ -906,7 +925,9 @@ const CustomersMenu = () => (
       >
         <div className='mb-5 flex justify-between border-y border-border pl-6 md:mb-0 md:mt-12'>
           <div className='relative aspect-square w-16 border-x border-border p-4'>
-            <img
+            <Image
+              width={500}
+              height={500}
               src='https://shadcnblocks.com/images/block/block-1.svg'
               alt='placeholder'
               className='h-auto w-full object-contain'
@@ -966,7 +987,9 @@ const NailArtMenu = () => (
             </p>
           </div>
           <div className='absolute inset-0 top-[32%] bg-accent invert md:top-0'>
-            <img
+            <Image
+              width={500}
+              height={500}
               src='https://shadcnblocks.com/images/block/placeholder-1.svg'
               alt='placeholder'
               className='object-fit h-full w-full object-right-top opacity-100 md:h-2/3 md:object-top'
@@ -991,7 +1014,9 @@ const NailArtMenu = () => (
             </p>
           </div>
           <div className='absolute inset-0 top-[32%] md:top-0'>
-            <img
+            <Image
+              width={500}
+              height={500}
               src='https://shadcnblocks.com/images/block/placeholder-2.svg'
               alt='placeholder'
               className='object-fit h-full w-full object-right-top md:h-2/3 md:object-top'
@@ -1055,7 +1080,9 @@ const ResourcesMenu = () => (
             </p>
           </div>
           <div className='absolute inset-0'>
-            <img
+            <Image
+              width={500}
+              height={500}
               src='https://shadcnblocks.com/images/block/placeholder-1.svg'
               alt='placeholder'
               className='h-full w-full object-cover object-center invert'
@@ -1137,25 +1164,29 @@ const Category = () => {
     | null
   >(null)
   return (
-    <div className='inset-x-0 top-0 z-20 bg-background'>
-      <div className='w-full'>
-        <NavigationMenu className='min-w-full bg-red-800 '>
-          <div className='flex w-full justify-evenly gap-4 py-4 mx-[10px]'>
-            <div className='flex items-center gap-2 xl:gap-8'>
+    <div className='inset-x-0 top-0 z-20 bg-background w-full'>
+      {/* <div className='w-full'> */}
+      <div className=''>
+        <NavigationMenu className='max-w-full'>
+          {/* <NavigationMenu className='min-w-full bg-gray'> */}
+          {/* <div className='flex w-full justify-evenly gap-4 py-4 mx-[10px]'> */}
+          <div className='justifyh'>
+            {/* <div className='flex w-full items-center gap-2 xl:gap-8'> */}
+            <div className=''>
               {/* <a href="#">
-                <img
+                <Image width={500} height={500}}
                   src="https://shadcnblocks.com/images/block/logos/astro.svg"
                   alt="Logo"
                   className="h-auto w-[80px]"
                 />
               </a> */}
-              <NavigationMenuList className='hidden lg:flex'>
+              <NavigationMenuList className=' hidden lg:flex'>
                 <NavigationMenuItem>
-                  <NavigationMenuTrigger className='text-xs xl:text-sm mr-10'>
+                  <NavigationMenuTrigger className='text-xs xl:text-sm'>
                     Jewelry
                   </NavigationMenuTrigger>
                   <NavigationMenuContent className='min-w-[calc(100vw-4rem)] p-12 2xl:min-w-[calc(1400px-4rem)]'>
-                    <SolutionsMenu />
+                    <JewelrySubmenuTop />
                   </NavigationMenuContent>
                 </NavigationMenuItem>
                 <NavigationMenuItem>
@@ -1307,7 +1338,7 @@ const Category = () => {
               {submenu === 'jewelry' && (
                 <div className='container'>
                   <h2 className='pb-6 pt-4 text-lg font-medium'>Jewelry</h2>
-                  <SolutionsMenu />
+                  <JewelrySubmenuTop />
                 </div>
               )}
               {submenu === 'products' && (

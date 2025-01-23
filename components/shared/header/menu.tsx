@@ -17,12 +17,11 @@ const Menu = ({ forAdmin = false }: { forAdmin?: boolean }) => {
   const t = useTranslations()
   return (
     <div className='flex justify-end'>
-      <nav className='md:flex gap-3 hidden w-full'>
-
+      <nav className='md:flex gap-3 hidden w-full mr-40'>
         {forAdmin ? null : <CartButton />}
-        <ThemeSwitcher />
-
-        
+        <div className='ml-6'>
+          <ThemeSwitcher />
+        </div>
       </nav>
       <nav className='md:hidden'>
         <Sheet>

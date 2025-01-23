@@ -24,7 +24,6 @@ export default async function HomePage() {
 
   const favorites = await getIsFavorite()
 
-
   const categories = (await getAllCategories()).slice(0, 4)
   const newArrivals = await getProductsForCard({
     tag: 'new-arrival',

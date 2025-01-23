@@ -30,15 +30,20 @@ const ProductCard = ({
             src={product.images[0]}
             hoverSrc={product.images[1]}
             alt={product.name}
+            
           />
         ) : (
           <div className='relative h-52'>
             <Image
               src={product.images[0]}
               alt={product.name}
-              fill
-              sizes='80vw'
-              className='object-contain'
+              // fill
+              width={600}
+              height={500}
+              // sizes='80vw'
+              sizes="{max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              // className='object-contain'
+               className="aspect-square rounded-lg bg-gray-200 object-cover group-hover:opacity-75"
             />
           </div>
         )}
@@ -46,7 +51,7 @@ const ProductCard = ({
     </Link>
   )
   const ProductDetails = () => (
-    <div className='flex-1 space-y-2'>
+    <div className='flex-1 space-y-2 mt-32 mx-auto'>
       <p className='font-bold'>{product.brand}</p>
       <Link
         href={`/product/${product.slug}`}
