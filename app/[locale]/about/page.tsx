@@ -1,7 +1,7 @@
 
 import Image from 'next/image'
 
-const About6 = () => {
+const About = () => {
   return (
     <section className='py-32'>
       <div className='container'>
@@ -162,4 +162,4 @@ const About6 = () => {
   )
 }
 
-export default About6
+export default About
