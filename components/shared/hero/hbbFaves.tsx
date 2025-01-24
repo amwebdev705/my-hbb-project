@@ -18,7 +18,7 @@ const FavoriteProducts: React.FC<FavoriteProductsProps> = ({ favorites }) => {
 
   return (
     <div>
-      <h2 className="text-xl font-semibold mb-4">Editor’s Favorites</h2>
+      <h2 className="text-xl font-semibold mb-4">HBB Favorites</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {favorites.map((product) => (
           <div key={product._id} className="card">

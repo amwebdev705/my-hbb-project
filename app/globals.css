@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
 @layer base {
   :root {
     --background: 0 0% 97%;
@@ -108,8 +113,11 @@
   .transform-style-preserve-3d {
     transform-style: preserve-3d;
   }
+
+  .rotate-y-180 {
+    transform: rotateY(180deg);
+  }
   .backface-hidden {
     backface-visibility: hidden;
   }
 }
-

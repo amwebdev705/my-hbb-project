@@ -12,6 +12,13 @@ const config: Config = withUt({
   ],
   theme: {
   	extend: {
+		transformOrigin: {
+			'center-3d': '50% 50% 0', // Optional 3D perspective origins
+		  },
+		  transitionTimingFunction: {
+			'in-out-cubic': 'cubic-bezier(0.4, 0, 0.2, 1)',
+		  },
+
   		borderRadius: {
   			md: '0.375rem'
   		},
@@ -26,6 +33,13 @@ const config: Config = withUt({
   			]
   		},
   		keyframes: {
+			rotateY: {
+				'0%': { transform: 'rotateY(0deg)' },
+				'100%': { transform: 'rotateY(180deg)' },
+			  },
+			//   animation: {
+			// 	rotateY: 'rotateY 0.6s ease-in-out',
+			//   },
   			scroll: {
   				'0%': {
   					transform: 'translateX(100%)'
